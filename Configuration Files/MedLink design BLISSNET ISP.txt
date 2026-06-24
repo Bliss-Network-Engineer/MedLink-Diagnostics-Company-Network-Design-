@@ -1,0 +1,87 @@
+==============================
+BLISSNET 
+=========================
+
+===============Interfaces Addressing
+
+=====Router A
+int gig2/0
+ip addr 92.10.12.2 255.255.255.252
+ex
+
+int gig1/0
+ip addr 92.10.12.9 255.255.255.252
+ex
+
+int gig0/0
+ip addr 92.10.12.5 255.255.255.252
+ex
+
+=====Router B
+
+int gig0/0
+ip addr 92.10.12.6 255.255.255.252
+ex
+
+int gig1/0
+ip addr 92.10.12.17 255.255.255.252
+ex
+
+
+======Router C
+int gig1/0
+ip addr 92.10.12.10 255.255.255.252
+ex
+
+int gig0/0
+ip addr 92.10.12.13 255.255.255.252
+ex
+
+
+======Router D
+
+int gig1/0
+ip addr 92.10.12.14 255.255.255.252
+ex
+
+int gig0/0
+ip addr 92.10.12.18 255.255.255.252
+ex
+
+int gig6/0
+ip addr 192.0.1.1 255.255.255.0
+ex
+
+
+
+
+==============BGP ROUTING
+
+
+==Medlnk branch 3
+router bgp 64519
+neighbor 92.10.12.2 remote-as 64518
+network 172.16.0.0 mask 255.255.0.0
+
+==A
+router bgp 64518
+neighbor 92.10.12.1 remote-as 64519
+neighbor 92.10.12.10 remote-as 64517
+neighbor 92.10.12.6 remote-as 64516
+
+==B
+router bgp 64516
+neighbor 92.10.12.5 remote-as 64518
+neighbor 92.10.12.18 remote-as 42045
+
+==C
+route bgp 64517
+neighbor 92.10.12.9 remote-as 64518
+neighbor 92.10.12.14 remote-as 42045
+
+==D
+router bgp 42045
+neighbor 92.10.12.13 remote-as 64517
+neighbor 92.10.12.17 remote-as 64516
+neighbor 192.0.1.254 remote-as 35400
+network 92.10.12.0 mask 255.255.255.0

@@ -1,0 +1,60 @@
+==========Access Switches
+
+vlan 100
+name Peering_VLAN
+
+vlan 200
+name Management_VLAN
+
+int range gig0/1-gig6/1
+switchport mode access
+switchport access vlan 100
+ex
+do wr
+
+int gig7/1
+switchport mode trunk
+switchport trunk allowed vlan 100,200
+
+==========Core switches
+
+vlan 100
+name Peering_VLAN
+
+vlan 200
+name Management_VLAN
+ex
+
+int range gig1/0/1-gig1/0/3
+switchport mode trunk
+switchport trunk allowed vlan 100,200
+ex
+
+int gig1/0/8
+switchport mode trunk
+switchport trunk allowed vlan 100,200
+
+
+
+
+
+=========Route Server
+int gig0/0/1.100
+encapsulation dot1q 100
+ip addr 192.0.1.254 255.255.255.0
+ex
+
+int gig0/0/1.200
+encapsulation dot1q 200
+
+route bgp 35400
+neighbor 192.0.1.1 remote-as 42045
+neighbor 192.0.1.1 description BLISSNET_ISP
+neighbor 192.0.1.2 remote-as 32872
+neighbor 192.0.1.2 description ONEDATA_ISP
+neighbor 192.0.1.3 remote-as 29091
+neighbor 192.0.1.3 description IPNX_ISP
+neighbor 192.0.1.4 remote-as 37125
+neighbor 192.0.1.4 description LAYER3 ISP
+
+redistribute connected

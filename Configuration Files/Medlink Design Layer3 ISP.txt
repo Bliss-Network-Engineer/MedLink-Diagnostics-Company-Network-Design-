@@ -1,0 +1,101 @@
+=========================
+        LAYER 3
+=========================
+
+===============Interfaces Addressing
+
+=====Router A
+int gig6/0
+ip addr 102.54.12.78 255.255.255.252
+ex
+
+int gig1/0
+ip addr 102.54.12.5 255.255.255.252
+ex
+
+int gig0/0
+ip addr 102.54.12.1 255.255.255.252
+ex
+
+=====Router B
+int gig2/0
+ip addr 102.54.12.18 255.255.255.252
+ex
+
+int gig1/0
+ip addr 102.54.12.10 255.255.255.252
+ex
+
+int gig0/0
+ip addr 102.54.12.13 255.255.255.252
+ex
+
+
+======Router C
+int gig0/0
+ip addr 102.54.12.2 255.255.255.252
+ex
+
+int gig1/0
+ip addr 102.54.12.9 255.255.255.252
+ex
+
+
+======Router D
+
+int gig1/0
+ip addr 102.54.12.14 255.255.255.252
+ex
+
+int gig0/0
+ip addr 102.54.12.6 255.255.255.252
+ex
+
+int gig6/0
+ip addr 192.0.1.4 255.255.255.0
+ex
+
+
+
+
+==============BGP ROUTING
+
+
+==Medlnk branch 1
+int fa0/1
+ip addr 102.54.12.17 255.255.255.252
+ex
+
+router bgp 64528
+neighbor 102.54.12.18 remote-as 64526
+network 172.16.0.0 mask 255.255.0.0
+
+==A
+router bgp 64524
+neighbor 102.54.12.77 remote-as 64527
+neighbor 102.54.12.2 remote-as 64525
+neighbor 102.54.12.6 remote-as 37125
+redistribute connected
+redistribute static
+ip route 102.54.12.64 255.255.255.192 102.54.12.77
+
+
+==B
+router bgp 64526
+neighbor 102.54.12.9 remote-as 64525
+neighbor 102.54.12.17 remote-as 64528
+neighbor 102.54.12.14 remote-as 37125
+redistribute connected
+
+==C
+route bgp 64525
+neighbor 102.54.12.1 remote-as 64524
+neighbor 102.54.12.10 remote-as 64526
+redistribute connected
+
+==D
+router bgp 37125
+neighbor 102.54.12.5 remote-as 64524
+neighbor 102.54.12.13 remote-as 64526
+neighbor 192.0.1.254 remote-as 35400
+network 102.54.12.0 mask 255.255.255.0

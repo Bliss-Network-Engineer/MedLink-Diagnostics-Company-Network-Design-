@@ -1,0 +1,598 @@
+DataCenter Network Configs
+================================
+
+
+===========================================SW A
+ip routing
+
+vlan 10
+name BackUp_Zone
+ex
+
+int range fa0/1-fa0/4
+switchport mode access
+switchport access vlan 10
+
+int range fa0/5-fa0/7
+no switchport
+
+interface FastEthernet0/5
+description Link-to-CORE1
+no switchport
+ip address 10.30.0.2 255.255.255.252
+no shutdown
+
+interface FastEthernet0/6
+description Link-to-CORE2
+no switchport
+ip address 10.30.0.6 255.255.255.252
+no shutdown
+
+interface FastEthernet0/7
+description Link-to-CORE3
+no switchport
+ip address 10.30.0.10 255.255.255.252
+no shutdown
+
+
+
+int l0
+ip addr 10.0.0.1 255.255.255.255
+ex
+
+int vlan 10
+ip addr 102.54.12.81 255.255.255.248
+ex
+
+router ospf 1
+network 102.54.12.80 0.0.0.7 area 0
+network 10.0.0.1 0.0.0.0 area 0
+network 10.30.0.0 0.0.0.3 area 0
+network 10.30.0.4 0.0.0.3 area 0
+network 10.30.0.8 0.0.0.3 area 0
+ex
+
+ip route 0.0.0.0 0.0.0.0 10.0.0.6
+ip route 0.0.0.0 0.0.0.0 10.0.0.7
+ip route 0.0.0.0 0.0.0.0 10.0.0.8
+
+do wr
+
+
+============================================SW B
+
+ip routing
+
+vlan 20
+name Database_Servers
+ex
+
+int range fa0/1-fa0/4
+switchport mode access
+switchport access vlan 20
+
+int range fa0/5-fa0/7
+no switchport
+
+interface FastEthernet0/5
+description Link-to-CORE1
+no switchport
+ip address 10.30.0.14 255.255.255.252
+no shutdown
+
+interface FastEthernet0/6
+description Link-to-CORE2
+no switchport
+ip address 10.30.0.18 255.255.255.252
+no shutdown
+
+interface FastEthernet0/7
+description Link-to-CORE3
+no switchport
+ip address 10.30.0.22 255.255.255.252
+no shutdown
+
+
+int l0
+ip addr 10.0.0.2 255.255.255.255
+ex
+
+int vlan 20
+ip addr 102.54.12.89 255.255.255.248
+ex
+
+router ospf 1
+network 102.54.12.88 0.0.0.7 area 0
+network 10.0.0.2 0.0.0.0 area 0
+network 10.30.0.12 0.0.0.3 area 0
+network 10.30.0.16 0.0.0.3 area 0
+network 10.30.0.20 0.0.0.3 area 0
+ex
+ip route 0.0.0.0 0.0.0.0 10.0.0.6
+ip route 0.0.0.0 0.0.0.0 10.0.0.7
+ip route 0.0.0.0 0.0.0.0 10.0.0.8
+
+do wr
+
+
+
+================================SW C
+
+ip routing
+
+vlan 30
+name APPS_Servers
+ex
+
+int range fa0/1-fa0/4
+switchport mode access
+switchport access vlan 30
+
+int range fa0/5-fa0/7
+no switchport
+
+interface FastEthernet0/5
+description Link-to-CORE1
+no switchport
+ip address 10.30.0.26 255.255.255.252
+no shutdown
+
+interface FastEthernet0/6
+description Link-to-CORE2
+no switchport
+ip address 10.30.0.30 255.255.255.252
+no shutdown
+
+interface FastEthernet0/7
+description Link-to-CORE3
+no switchport
+ip address 10.30.0.34 255.255.255.252
+no shutdown
+
+
+
+int l0
+ip addr 10.0.0.3 255.255.255.255
+ex
+
+int vlan 30
+ip addr 102.54.12.97 255.255.255.248
+ex
+
+router ospf 1
+network 102.54.12.96 0.0.0.7 area 0
+network 10.0.0.3 0.0.0.0 area 0
+network 10.30.0.24 0.0.0.3 area 0
+network 10.30.0.28 0.0.0.3 area 0
+network 10.30.0.32 0.0.0.3 area 0
+ex
+ip route 0.0.0.0 0.0.0.0 10.0.0.6
+ip route 0.0.0.0 0.0.0.0 10.0.0.7
+ip route 0.0.0.0 0.0.0.0 10.0.0.8
+
+do wr
+
+
+
+==========================SW D
+
+ip routing
+
+vlan 40
+name Utility_Servers
+ex
+
+int range fa0/1-fa0/4
+switchport mode access
+switchport access vlan 40
+
+int range fa0/5-fa0/7
+no switchport
+
+interface FastEthernet0/5
+description Link-to-CORE1
+no switchport
+ip address 10.30.0.38 255.255.255.252
+no shutdown
+
+interface FastEthernet0/6
+description Link-to-CORE2
+no switchport
+ip address 10.30.0.42 255.255.255.252
+no shutdown
+
+interface FastEthernet0/7
+description Link-to-CORE3
+no switchport
+ip address 10.30.0.46 255.255.255.252
+no shutdown
+
+int l0
+ip addr 10.0.0.4 255.255.255.255
+ex
+
+int vlan 40
+ip addr 102.54.12.105 255.255.255.248
+ex
+
+router ospf 1
+network 102.54.12.104 0.0.0.7 area 0
+network 10.0.0.4 0.0.0.0 area 0
+network 10.30.0.36 0.0.0.3 area 0
+network 10.30.0.40 0.0.0.3 area 0
+network 10.30.0.44 0.0.0.3 area 0
+ex
+ip route 0.0.0.0 0.0.0.0 10.0.0.6
+ip route 0.0.0.0 0.0.0.0 10.0.0.7
+ip route 0.0.0.0 0.0.0.0 10.0.0.8
+
+do wr
+
+
+
+=========================================SW E
+ip routing
+
+vlan 50
+name Management
+ex
+
+vlan 60
+name VOIP
+ex
+
+int range fa0/1-fa0/2
+switchport mode access
+switchport access vlan 50
+
+int range fa0/3-fa0/4
+switchport mode access
+switchport access vlan 60
+switchport voice vlan 60
+
+int range fa0/5-fa0/7
+no switchport
+
+interface FastEthernet0/5
+description Link-to-CORE1
+no switchport
+ip address 10.30.0.50 255.255.255.252
+no shutdown
+
+interface FastEthernet0/6
+description Link-to-CORE2
+no switchport
+ip address 10.30.0.54 255.255.255.252
+no shutdown
+
+interface FastEthernet0/7
+description Link-to-CORE3
+no switchport
+ip address 10.30.0.58 255.255.255.252
+no shutdown
+
+int l0
+ip addr 10.0.0.5 255.255.255.255
+ex
+
+int vlan 50
+ip addr 10.10.0.1 255.255.255.0
+ex
+
+int vlan 60
+ip addr 10.20.0.1 255.255.255.240
+ex
+
+ip dhcp excluded-address 10.10.0.1 10.10.0.5
+ip dhcp excluded-address 10.20.0.1 10.20.0.5
+
+ip dhcp pool Management
+network 10.10.0.0 255.255.255.0
+default-router 10.10.0.1
+
+ip dhcp pool VOIP
+network 10.20.0.1 255.255.255.240
+default-router 10.20.0.1
+option 150 ip 10.20.0.2
+
+router ospf 1
+network 10.10.0.0 0.0.0.255 area 1
+network 10.20.0.0 0.0.0.15 area 1
+network 10.0.0.5 0.0.0.0 area 0
+network 10.30.0.48 0.0.0.3 area 0
+network 10.30.0.52 0.0.0.3 area 0
+network 10.30.0.56 0.0.0.3 area 0
+ex
+ip route 0.0.0.0 0.0.0.0 10.0.0.6
+ip route 0.0.0.0 0.0.0.0 10.0.0.7
+ip route 0.0.0.0 0.0.0.0 10.0.0.8
+
+do wr
+
+
+
+
+
+
+================================================SW A2
+
+int range gig1/0/1-gig1/0/6
+no switchport
+ex
+
+ip routing
+
+int l0
+ip addr 10.0.0.6 255.255.255.255
+ex
+
+interface GigabitEthernet1/0/1
+description Link-to-DIST1
+no switchport
+ip address 10.30.0.1 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/2
+description Link-to-DIST2
+no switchport
+ip address 10.30.0.13 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/3
+description Link-to-DIST3
+no switchport
+ip address 10.30.0.25 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/4
+description Link-to-DIST4
+no switchport
+ip address 10.30.0.37 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/5
+description Link-to-DIST5
+no switchport
+ip address 10.30.0.49 255.255.255.252
+no shutdown
+
+
+int gig1/0/6
+description UpLink
+ip addr 102.54.12.73 255.255.255.252
+ex
+
+router ospf 1
+network 10.0.0.6 0.0.0.0 area 0
+network 10.30.0.0 0.0.0.3 area 0
+network 10.30.0.12 0.0.0.3 area 0
+network 10.30.0.24 0.0.0.3 area 0
+network 10.30.0.36 0.0.0.3 area 0
+network 10.30.0.48 0.0.0.3 area 0
+network 102.54.12.72 0.0.0.3 area 2
+
+
+======================================================SW B2
+
+int range gig1/0/1-gig1/0/6
+no switchport
+ex
+ip routing
+int l0
+ip addr 10.0.0.7 255.255.255.255
+ex
+
+interface GigabitEthernet1/0/1
+description Link-to-DIST1
+no switchport
+ip address 10.30.0.5 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/2
+description Link-to-DIST2
+no switchport
+ip address 10.30.0.17 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/3
+description Link-to-DIST3
+no switchport
+ip address 10.30.0.29 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/4
+description Link-to-DIST4
+no switchport
+ip address 10.30.0.41 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/5
+description Link-to-DIST5
+no switchport
+ip address 10.30.0.53 255.255.255.252
+no shutdown
+
+int gig1/0/6
+description UpLink
+ip addr 102.54.12.69 255.255.255.252
+ex
+
+router ospf 1
+network 10.0.0.7 0.0.0.0 area 0
+network 10.30.0.4 0.0.0.3 area 0
+network 10.30.0.16 0.0.0.3 area 0
+network 10.30.0.28 0.0.0.3 area 0
+network 10.30.0.40 0.0.0.3 area 0
+network 10.30.0.52 0.0.0.3 area 0
+network 102.54.12.68 0.0.0.3 area 2
+do wr
+
+
+
+
+====================================================SW C2
+
+int range gig1/0/1-gig1/0/6
+no switchport
+ex`
+ip routing
+int l0
+ip addr 10.0.0.8 255.255.255.255
+ex
+
+interface GigabitEthernet1/0/1
+description Link-to-DIST1
+no switchport
+ip address 10.30.0.9 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/2
+description Link-to-DIST2
+no switchport
+ip address 10.30.0.21 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/3
+description Link-to-DIST3
+no switchport
+ip address 10.30.0.33 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/4
+description Link-to-DIST4
+no switchport
+ip address 10.30.0.45 255.255.255.252
+no shutdown
+
+interface GigabitEthernet1/0/5
+description Link-to-DIST5
+no switchport
+ip address 10.30.0.57 255.255.255.252
+no shutdown
+
+int gig1/0/6
+description UpLink
+ip addr 102.54.12.65 255.255.255.252
+ex
+
+router ospf 1
+network 10.0.0.8 0.0.0.0 area 0
+network 10.30.0.8 0.0.0.3 area 0
+network 10.30.0.20 0.0.0.3 area 0
+network 10.30.0.32 0.0.0.3 area 0
+network 10.30.0.44 0.0.0.3 area 0
+network 10.30.0.56 0.0.0.3 area 0
+network 102.54.12.64 0.0.0.3 area 2
+do wr
+
+
+
+============ROUTER
+int gig0/0
+ip addr 102.54.12.74 255.255.255.252
+ex
+
+int gig1/0
+ip addr 102.54.12.70 255.255.255.252
+ex
+
+int gig2/0
+ip addr 102.54.12.66 255.255.255.252
+ex
+
+
+========
+int gig0/0
+ip addr 102.54.12.74 255.255.255.252
+ex
+
+int gig0/1
+ip addr 102.54.12.70 255.255.255.252
+ex
+
+int gig0/2
+ip addr 102.54.12.66 255.255.255.252
+ex
+
+int se0/3/0
+ip addr 102.54.12.77 255.255.255.252
+ex
+=========
+
+
+router ospf 1
+network 102.54.12.68 0.0.0.3 area 2
+network 102.54.12.72 0.0.0.3 area 2
+network 102.54.12.64 0.0.0.3 area 2
+ex
+
+int gig6/0
+ip addr 102.54.12.77 255.255.255.252
+ex
+
+router bgp 64527
+neighbor 102.54.12.78 remote-as 64524
+network 102.54.12.64 mask 255.255.255.192
+
+ip route 0.0.0.0 0.0.0.0 102.54.12.78
+ip route 102.54.12.80 255.255.255.248 10.0.0.6
+ip route 102.54.12.88 255.255.255.248 10.0.0.7
+ip route 102.54.12.96 255.255.255.248 10.0.0.7
+ip route 102.54.12.104 255.255.255.248 10.0.0.8
+
+==========CME
+
+int fa0/0.60
+encapsulation dot1q 60
+ip addr 10.20.0.2 255.255.255.240
+
+
+=============VOIP
+telephony-service
+ip source-address 10.20.0.2 port 2000
+max-ephone 4
+max-dn 5
+auto assign 1 to 5
+ex
+
+ephone-dn 1
+number 410
+ephone-dn 2
+number 411
+ephone-dn 3
+number 412
+ephone-dn 4
+number 413
+
+
+
+===========Internal DataCenter Server Routing
+ip route 0.0.0.0 0.0.0.0 102.54.12.77
+
+
+
+=======IPSEC TO HQ and Branches
+
+ip access-list extended MedLinkVPN
+	permit ip 102.54.12.64 0.0.0.63 172.16.0.0 0.0.255.255
+
+crypto isakmp policy 10
+ encryption aes
+ hash sha
+ authentication pre-share
+ group 2
+ lifetime 86400
+
+crypto isakmp key medlinkcore address 200.35.23.21
+
+crypto ipsec transform-set MedLinkVPN-SET esp-aes esp-sha-hmac
+
+crypto map MedLinkVPN-MAP 10 ipsec-isakmp
+ set peer 200.35.23.21
+ set transform-set MedLinkVPN-SET
+ match address MedLinkVPN
+
+
+int se0/3/0
+crypto map MedLinkVPN-MAP
+ 
