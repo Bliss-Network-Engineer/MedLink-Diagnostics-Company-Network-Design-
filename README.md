@@ -1,6 +1,7 @@
 MedLink Diagnostics Enterprise Network Design
 
 ---Overview---
+
 This project presents the design and implementation of a secure, scalable, and highly available enterprise network infrastructure for MedLink Diagnostics, a multi-site healthcare organization consisting of a headquarters, branch clinics, and a centralized data center.
 
 The objective of the project was to redesign the organization's network to address challenges related to scalability, security, reliability, performance, and operational efficiency while supporting critical healthcare services and future growth.
