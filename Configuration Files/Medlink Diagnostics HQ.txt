@@ -1,0 +1,1008 @@
+=========================================
+ MEDLINK DIAGNOSTICS NETWORK DESIGN
+=========================================
+
+ =============================
+  HQ NETWORK CONFIGURATIONS
+ =============================
+
+      ACCESS LAYER CONFIGS 
+    =======================
+ VLAN CREATION
+================
+vlan 10
+name Admin
+
+vlan 20
+name HR
+
+vlan 30
+name Finance
+
+vlan 40
+name IT
+
+vlan 50
+name Lab
+
+vlan 60
+name CCTV
+
+vlan 70
+name VoIP
+
+vlan 80
+name Servers
+    
+     ========WiFi Corner=========
+
+vlan 100
+name Admin_WiFi
+
+vlan 102
+name HR_WiFi
+
+vlan 103
+name Finance_WiFi
+
+vlan 104
+name Lab_WiFi
+
+vlan 105
+name Guest_WiFi
+
+
+ PORT ALLOCATION
+==================
+  ==== For Admin, HR, Fin., Lab switches ====
+
+====Common
+int range fa0/1-fa0/2
+switchport mode trunk
+ex
+
+int range fa0/20-fa0/21
+switchport voice vlan 70
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+int range fa0/22-fa0/24
+switchport mode access
+switchport access vlan 60
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+
+========Varying
+
+======Admin
+int range fa0/3-fa0/15
+switchport mode access
+switchport access vlan 10
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+int gig0/1
+description Interface to Access Point
+switchport mode access
+switchport access vlan 100
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+=======HR
+int range fa0/3-fa0/15
+switchport mode access
+switchport access vlan 20
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+int gig0/1
+description Interface to Access Point
+switchport mode access
+switchport access vlan 102
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+
+=======Finance
+int range fa0/3-fa0/15
+switchport mode access
+switchport access vlan 30
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+int gig0/1
+description Interface to Access Point
+switchport mode access
+switchport access vlan 103
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+
+=======Lab
+int range fa0/3-fa0/15
+switchport mode access
+switchport access vlan 50
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+int gig0/1
+description Interface to Access Point
+switchport mode access
+switchport access vlan 104
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+ex
+
+
+========For IT and Servers ============
+int range fa0/1-fa0/2
+switchport mode trunk
+ex
+
+int range fa0/3-fa0/11
+switchport mode access
+switchport access vlan 40
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+
+int range fa0/12-fa0/22
+switchport mode access
+switchport access vlan 80
+ex
+
+int fa0/23
+switchport mode access 
+switchport access vlan 60
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+
+int fa0/24
+switchport mode access
+switchport access vlan 70
+ex
+
+
+
+=====DHCP SNOOPING / DYNAMIC ARP INSPECTION====
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,30,40,50,60,70,80,100,102,103,104,105
+ip arp inspection vlan 10,20,30,40,50,60,70,80,100,102,103,104,10
+int range fa0/1-fa0/2
+ip dhcp snooping trust
+ip arp inspection trust
+
+
+===============================
+   DISTRIBUTION LAYER CONFIGS
+===============================
+
+================
+PORT ASSIGNMENT
+================
+DISTRI 1
+=========
+int range fa0/1-fa0/2
+no switchport
+channel-group 1 mode active
+ex
+
+int range fa0/3-fa0/4
+no switchport
+channel-group 2 mode active
+ex
+
+int range fa0/5-fa0/9
+switchport trunk encapsulation dot1q
+switchport mode trunk 
+switchport trunk allowed vlan all
+ex
+
+int gig0/1
+switchport mode access
+switchport access vlan 105
+ex
+
+int p1
+ip 10.0.0.1 255.255.255.252
+ex
+
+int p2
+ip 10.0.0.5 255.255.255.252
+ex
+
+
+DISTRI 2
+===========
+int range fa0/1-fa0/2
+no switchport
+channel-group 2 mode active
+ex
+
+int range fa0/3-fa0/4
+no switchport
+channel-group 3 mode active
+ex
+
+int range fa0/5-fa0/9
+switchport trunk encapsulation dot1q
+switchport mode trunk 
+switchport trunk allowed vlan all
+ex
+
+int gig0/1
+switchport mode access
+switchport access vlan 105
+ex
+
+int p2
+ip 10.0.0. 255.255.255.252
+ex
+
+int p3
+ip 10.0.0.9 255.255.255.252
+ex
+
+=============
+ SVIS & HSRP
+=============
+DISTRI 1
+=========
+
+int vlan 10
+ip address 172.16.1.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 10 ip 172.16.1.1
+standby 10 priority 110
+standby 10 preempt
+ex
+
+int vlan 20
+ip address 172.16.2.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 20 ip 172.16.2.1
+standby 20 priority 110
+standby 20 preempt
+ex
+
+int vlan 30
+ip address 172.16.3.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 30 ip 172.16.3.1
+standby 30 priority 110
+standby 30 preempt
+ex
+
+int vlan 40
+ip address 172.16.4.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 40 ip 172.16.4.1
+standby 40 priority 110
+standby 40 preempt
+ex
+
+int vlan 50
+ip address 172.16.5.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 50 ip 172.16.5.1
+standby 50 priority 110
+standby 50 preempt
+ex
+
+int vlan 60
+ip address 172.16.6.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 60 ip 172.16.6.1
+standby 60 priority 110
+standby 60 preempt
+ex
+
+int vlan 70
+ip address 172.16.7.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 70 ip 172.16.7.1
+standby 70 priority 110
+standby 70 preempt
+ex
+
+int vlan 80
+ip address 172.16.8.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 80 ip 172.16.8.1
+standby 80 priority 110
+standby 80 preempt
+ex
+
+int vlan 100
+ip address 192.168.1.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 100 ip 192.168.1.1
+standby 100 priority 90
+standby 100 preempt
+ex
+
+int vlan 102
+ip address 192.168.2.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 102 ip 192.168.2.1
+standby 102 priority 90
+standby 102 preempt
+ex
+
+int vlan 103
+ip address 192.168.3.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 103 ip 192.168.3.1
+standby 103 priority 90
+standby 103 preempt
+ex
+
+int vlan 104
+ip address 192.168.4.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 104 ip 192.168.4.1
+standby 104 priority 90
+standby 104 preempt
+ex
+
+int vlan 105
+ip address 192.168.5.2 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 105 ip 192.168.5.1
+standby 105 priority 90
+standby 105 preempt
+ex
+
+
+
+DISTRI 2
+===========
+int vlan 10
+ip address 172.16.1.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 10 ip 172.16.1.1
+standby 10 priority 90
+standby 10 preempt
+ex
+
+int vlan 20
+ip address 172.16.2.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 20 ip 172.16.2.1
+standby 20 priority 90
+standby 20 preempt
+ex
+
+int vlan 30
+ip address 172.16.3.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 30 ip 172.16.3.1
+standby 30 priority 90
+standby 30 preempt
+ex
+
+int vlan 40
+ip address 172.16.4.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 40 ip 172.16.4.1
+standby 40 priority 90
+standby 40 preempt
+ex
+
+int vlan 50
+ip address 172.16.5.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 50 ip 172.16.5.1
+standby 50 priority 90
+standby 50 preempt
+ex
+
+int vlan 60
+ip address 172.16.6.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 60 ip 172.16.6.1
+standby 60 priority 90
+standby 60 preempt
+ex
+
+int vlan 70
+ip address 172.16.7.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 70 ip 172.16.7.1
+standby 70 priority 90
+standby 70 preempt
+ex
+
+int vlan 80
+ip address 172.16.8.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 80 ip 172.16.8.1
+standby 80 priority 90
+standby 80 preempt
+ex
+
+int vlan 100
+ip address 192.168.1.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 100 ip 192.168.1.1
+standby 100 priority 110
+standby 100 preempt
+ex
+
+int vlan 102
+ip address 192.168.2.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 102 ip 192.168.2.1
+standby 102 priority 110
+standby 102 preempt
+ex
+
+int vlan 103
+ip address 192.168.3.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 103 ip 192.168.3.1
+standby 103 priority 110
+standby 103 preempt
+ex
+
+int vlan 104
+ip address 192.168.4.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 104 ip 192.168.4.1
+standby 104 priority 110
+standby 104 preempt
+ex
+
+int vlan 105
+ip address 192.168.5.3 255.255.255.0
+ip helper-address 172.16.8.4
+standby version 2
+standby 105 ip 192.168.5.1
+standby 105 priority 110
+standby 105 preempt
+ex
+
+==================
+OSPF ROUTING
+==================
+
+DISTRI 1
+=============
+router ospf 1
+network 172.16.1.0 0.0.0.255 area 1
+network 172.16.2.0 0.0.0.255 area 1
+network 172.16.3.0 0.0.0.255 area 1
+network 172.16.4.0 0.0.0.255 area 1
+network 172.16.5.0 0.0.0.255 area 1
+network 172.16.6.0 0.0.0.255 area 1
+network 172.16.7.0 0.0.0.255 area 1
+network 172.16.8.0 0.0.0.255 area 1
+network 192.168.1.0 0.0.0.255 area 1
+network 192.168.2.0 0.0.0.255 area 1
+network 192.168.3.0 0.0.0.255 area 1
+network 192.168.4.0 0.0.0.255 area 1
+network 192.168.5.0 0.0.0.255 area 1
+network 10.0.0.0 0.0.0.3 area 0
+network 10.0.0.4 0.0.0.3 area 0
+ex
+
+DISTRI 1
+=============
+router ospf 1
+network 172.16.1.0 0.0.0.255 area 1
+network 172.16.2.0 0.0.0.255 area 1
+network 172.16.3.0 0.0.0.255 area 1
+network 172.16.4.0 0.0.0.255 area 1
+network 172.16.5.0 0.0.0.255 area 1
+network 172.16.6.0 0.0.0.255 area 1
+network 172.16.7.0 0.0.0.255 area 1
+network 172.16.8.0 0.0.0.255 area 1
+network 192.168.1.0 0.0.0.255 area 1
+network 192.168.2.0 0.0.0.255 area 1
+network 192.168.3.0 0.0.0.255 area 1
+network 192.168.4.0 0.0.0.255 area 1
+network 192.168.5.0 0.0.0.255 area 1
+network 10.0.0.4 0.0.0.3 area 0
+network 10.0.0.8 0.0.0.3 area 0
+ex
+
+
+====================
+CORE LAYER CONFIGS
+====================
+
+CORE 1
+========
+int range fa0/1-fa0/2
+no switchport
+channel-group 1 mode active 
+ex
+
+int range fa0/3-fa0/4
+no switchport
+channel-group 4 mode active
+ex
+
+int p1
+ip 10.0.0.2 255.255.255.252
+ex
+
+int p4
+ip 10.0.0.13 255.255.255.252
+ex
+
+int gig0/1
+no switchport
+ip addr 10.0.0.17 255.255.255.252
+ex
+
+OSPF ROUTING
+=============
+router ospf 1
+network 10.0.0.0 0.0.0.3 area 0
+network 10.0.0.12 0.0.0.3 area 0
+network 10.0.0.16 0.0.0.3 area 2
+ex
+
+CORE 2
+==========
+int range fa0/1-fa0/2
+no switchport
+channel-group 3 mode active
+ex
+
+int range fa0/3-fa0/4
+no switchport
+channel-group 4 mode active
+ex
+
+int p3
+ip 10.0.0.10 255.255.255.252
+ex
+
+int p4
+ip 10.0.0.14 255.255.255.252
+ex
+
+int gig0/1
+no switchport
+ip addr 10.0.0.21 255.255.255.252
+ex
+
+OSPF ROUTING
+=============
+router ospf 1
+network 10.0.0.8 0.0.0.3 area 0
+network 10.0.0.12 0.0.0.3 area 0
+network 10.0.0.20 0.0.0.3 area 2
+ex
+
+
+
+===================
+ROUTER CONFIGS
+===================
+
+int lo0
+ip addr 1.1.2.2 255.255.255.255
+ex
+
+int eth1/0
+ip addr 10.0.0.18 255.255.255.252
+ex
+
+int eth1/1
+ip addr 10.0.0.22 255.255.255.252
+ex
+
+int fa0/0
+ip addr 214.3.10.1 255.255.255.252
+ex
+
+int fa0/1
+ip addr 200.35.23.21 255.255.255.252
+ex
+
+
+===========OSPF ROUTING
+router ospf 1
+network 10.0.0.16 0.0.0.3 area 2
+network 10.0.0.20 0.0.0.3 area 2
+network 1.1.2.2 0.0.0.0 area 2
+ex
+
+
+=====BGP Routing
+router bgp 64515
+neighbor 214.3.10.2 remote-as 64513
+neighbor 200.35.23.22 remote-as 64520
+network 172.16.0.0 mask 255.255.0.0
+
+
+=============VOIP
+telephony-service
+ip source-address 1.1.2.2 port 2000
+max-ephone 10
+max-dn 15
+auto assign 1 to 15
+ex
+
+ephone-dn 1
+number 310
+ephone-dn 2
+number 311
+ephone-dn 3
+number 312
+ephone-dn 4
+number 313
+ephone-dn 5
+number 314
+ephone-dn 6
+number 315
+ephone-dn 7
+number 316
+ephone-dn 8
+number 317
+
+
+
+
+=============NAT CONFIG
+access-list 1 permit 172.16.0.0 0.0.255.255
+
+int fa0/0
+ip nat outside
+ex
+
+int fa0/1
+ip nat outside
+ex
+
+int eth1/0
+ip nat inside
+ex
+
+int eth1/1
+ip nat inside
+ex
+
+ip nat inside source list 1 int fa0/0 overload
+
+ip nat inside source list 1 int fa0/1 overload
+
+=======Default Routes
+ip route 0.0.0.0 0.0.0.0 214.3.10.2 1
+ip route 0.0.0.0 0.0.0.0 200.35.23.22 10
+
+
+
+
+
+=======IPSEC TO DATACENTER
+
+ip access-list extended MedLinkVPN
+	permit ip 172.16.0.0 0.0.255.255 102.54.12.64 0.0.0.63
+
+crypto isakmp policy 10
+ encryption aes
+ hash sha
+ authentication pre-share
+ group 2
+ lifetime 86400
+
+crypto isakmp key medlinkcore address 102.54.12.77
+
+crypto ipsec transform-set MedLinkVPN-SET esp-aes esp-sha-hmac
+
+crypto map MedLinkVPN-MAP 10 ipsec-isakmp
+ set peer 102.54.12.77
+ set transform-set MedLinkVPN-SET
+ match address MedLinkVPN
+
+
+int fa0/1
+crypto map MedLinkVPN-MAP
+
+
+
+=======IPSEC TO BRANCH 1
+
+ip access-list extended MedLinkVPN1
+	permit ip 172.16.0.0 0.0.255.255 172.16.0.0 0.0.255.255
+
+crypto isakmp policy 10
+ encryption aes
+ hash sha
+ authentication pre-share
+ group 2
+ lifetime 86400
+
+crypto isakmp key medlinkhqcore address 102.54.12.17
+
+crypto ipsec transform-set MedLinkVPN1-SET esp-aes esp-sha-hmac
+
+crypto map MedLinkVPN1-MAP 10 ipsec-isakmp
+ set peer 102.54.12.17
+ set transform-set MedLinkVPN1-SET
+ match address MedLinkVPN1
+
+
+int fa0/0
+crypto map MedLinkVPN1-MAP
+
+
+
+
+=======IPSEC TO BRANCH 2
+
+ip access-list extended MedLinkVPN1
+	permit ip 172.16.0.0 0.0.255.255 172.16.0.0 0.0.255.255
+
+crypto isakmp policy 10
+ encryption aes
+ hash sha
+ authentication pre-share
+ group 2
+ lifetime 86400
+
+crypto isakmp key medlinkhqcore address 200.35.23.1
+
+crypto ipsec transform-set MedLinkVPN1-SET esp-aes esp-sha-hmac
+
+crypto map MedLinkVPN1-MAP 10 ipsec-isakmp
+ set peer 200.35.23.1
+ set transform-set MedLinkVPN1-SET
+ match address MedLinkVPN1
+
+
+int fa0/0
+crypto map MedLinkVPN1-MAP
+
+
+
+
+
+=======IPSEC TO BRANCH 3
+
+ip access-list extended MedLinkVPN1
+	permit ip 172.16.0.0 0.0.255.255 172.16.0.0 0.0.255.255
+
+crypto isakmp policy 10
+ encryption aes
+ hash sha
+ authentication pre-share
+ group 2
+ lifetime 86400
+
+crypto isakmp key medlinkhqcore address 92.10.12.1
+
+crypto ipsec transform-set MedLinkVPN1-SET esp-aes esp-sha-hmac
+
+crypto map MedLinkVPN1-MAP 10 ipsec-isakmp
+ set peer 92.10.12.1
+ set transform-set MedLinkVPN1-SET
+ match address MedLinkVPN1
+
+
+int fa0/0
+crypto map MedLinkVPN1-MAP
+
+
+
+
+
+
+===============================================
+ACLS FOR TRAFFIC SEPARATION AND ACCESS CONTROL
+===============================================
+
+=======ADMIN VLAN
+ip access-list extended ADMIN-IN
+
+remark ===== DHCP =====
+permit udp any eq bootpc host 172.16.8.4 eq bootps
+
+remark ===== IT FULL ACCESS =====
+permit ip 172.16.4.0 0.0.0.255 any
+
+remark ===== BLOCK INTERNAL VLANS =====
+deny ip any 172.16.2.0 0.0.0.255
+deny ip any 172.16.3.0 0.0.0.255
+deny ip any 172.16.5.0 0.0.0.255
+deny ip any 172.16.6.0 0.0.0.255
+deny ip any 172.16.7.0 0.0.0.255
+deny ip any 172.16.8.0 0.0.0.255
+deny ip any 192.168.0.0 0.0.7.255
+
+remark ===== INTERNET ACCESS =====
+permit ip any any
+
+int vlan 10
+ip access-group ADMIN-IN in
+
+
+=======HR VLAN
+ip access-list extended HR-IN
+
+remark ===== DHCP =====
+permit udp any eq bootpc host 172.16.8.4 eq bootps
+
+remark ===== IT FULL ACCESS =====
+permit ip 172.16.4.0 0.0.0.255 any
+
+remark ===== BLOCK INTERNAL VLANS =====
+deny ip any 172.16.1.0 0.0.0.255
+deny ip any 172.16.3.0 0.0.0.255
+deny ip any 172.16.5.0 0.0.0.255
+deny ip any 172.16.6.0 0.0.0.255
+deny ip any 172.16.7.0 0.0.0.255
+deny ip any 172.16.8.0 0.0.0.255
+deny ip any 192.168.0.0 0.0.7.255
+
+remark ===== INTERNET ACCESS =====
+permit ip any any
+
+int vlan 20
+ip access-group HR-IN in
+
+
+===========FINANCE VLAN
+ip access-list extended FINANCE-IN
+
+remark ===== DHCP =====
+permit udp any eq bootpc host 172.16.8.4 eq bootps
+
+remark ===== IT FULL ACCESS =====
+permit ip 172.16.4.0 0.0.0.255 any
+
+remark ===== BLOCK INTERNAL VLANS =====
+deny ip any 172.16.1.0 0.0.0.255
+deny ip any 172.16.2.0 0.0.0.255
+deny ip any 172.16.5.0 0.0.0.255
+deny ip any 172.16.6.0 0.0.0.255
+deny ip any 172.16.7.0 0.0.0.255
+deny ip any 172.16.8.0 0.0.0.255
+deny ip any 192.168.0.0 0.0.7.255
+
+remark ===== INTERNET ACCESS =====
+permit ip any any
+
+int vlan 30
+ip access-group FINANCE-IN in
+
+
+
+=======LAB VLAN
+ip access-list extended LAB-IN
+
+remark ===== DHCP =====
+permit udp any eq bootpc host 172.16.8.4 eq bootps
+
+remark ===== IT FULL ACCESS =====
+permit ip 172.16.4.0 0.0.0.255 any
+
+remark ===== BLOCK INTERNAL VLANS =====
+deny ip any 172.16.1.0 0.0.0.255
+deny ip any 172.16.2.0 0.0.0.255
+deny ip any 172.16.3.0 0.0.0.255
+deny ip any 172.16.6.0 0.0.0.255
+deny ip any 172.16.7.0 0.0.0.255
+deny ip any 172.16.8.0 0.0.0.255
+deny ip any 192.168.0.0 0.0.7.255
+
+remark ===== INTERNET ACCESS =====
+permit ip any any
+
+int vlan 50
+ip access-group LAB-IN in
+
+
+
+==========CCTV VLAN
+ip access-list extended CCTV-IN
+
+remark ===== DHCP =====
+permit udp any eq bootpc host 172.16.8.4 eq bootps
+
+remark ===== IT FULL ACCESS =====
+permit ip 172.16.4.0 0.0.0.255 any
+
+remark ===== BLOCK INTERNAL VLANS =====
+deny ip any 172.16.1.0 0.0.0.255
+deny ip any 172.16.2.0 0.0.0.255
+deny ip any 172.16.3.0 0.0.0.255
+deny ip any 172.16.5.0 0.0.0.255
+deny ip any 172.16.7.0 0.0.0.255
+deny ip any 172.16.8.0 0.0.0.255
+deny ip any 192.168.0.0 0.0.7.255
+
+remark ===== INTERNET ACCESS =====
+permit ip any any
+
+int vlan 60
+ip access-group CCTV-IN in
+
+
+
+==========VOIP VLAN
+ip access-list extended VOIP-IN
+
+remark ===== DHCP =====
+permit udp any eq bootpc host 172.16.8.4 eq bootps
+
+remark ===== IT FULL ACCESS =====
+permit ip 172.16.4.0 0.0.0.255 any
+
+remark ===== BLOCK INTERNAL VLANS =====
+deny ip any 172.16.1.0 0.0.0.255
+deny ip any 172.16.2.0 0.0.0.255
+deny ip any 172.16.3.0 0.0.0.255
+deny ip any 172.16.5.0 0.0.0.255
+deny ip any 172.16.6.0 0.0.0.255
+deny ip any 172.16.8.0 0.0.0.255
+deny ip any 192.168.0.0 0.0.7.255
+
+remark ===== INTERNET ACCESS =====
+permit ip any any
+
+int vlan 70
+ip access-group VOIP-IN in
+
