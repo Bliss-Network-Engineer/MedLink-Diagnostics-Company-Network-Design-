@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedLink Hospital — Care You Can Count On</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:     #0B1F3A;
+  --navy-md:  #162F54;
+  --navy-lt:  #1E4080;
+  --blue:     #2B7FE0;
+  --blue-lt:  #EBF4FF;
+  --mint:     #10B98D;
+  --mint-lt:  #E6F9F4;
+  --cloud:    #F4F8FF;
+  --white:    #FFFFFF;
+  --text:     #1A2B45;
+  --text-md:  #4A5E78;
+  --text-lt:  #8EA3BC;
+  --border:   #DDE6F0;
+  --red:      #E84855;
+  --amber:    #F59E0B;
+  --radius:   10px;
+  --shadow:   0 2px 8px rgba(11,31,58,.08);
+  --shadow-md:0 8px 24px rgba(11,31,58,.12);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--text); background: var(--white); font-size: 15px; line-height: 1.6; }
+
+/* ── UTILS ── */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+.section    { padding: 80px 0; }
+.section-alt{ background: var(--cloud); }
+.eyebrow    { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--mint); margin-bottom: 10px; }
+.section-title { font-size: 32px; font-weight: 800; color: var(--navy); line-height: 1.2; margin-bottom: 14px; }
+.section-sub   { font-size: 16px; color: var(--text-md); max-width: 520px; line-height: 1.7; }
+.center { text-align: center; }
+.center .section-sub { margin: 0 auto; }
+
+/* ── NAV ── */
+.nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(11,31,58,.97); backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 66px; gap: 24px;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-brand .logo {
+  width: 36px; height: 36px; background: var(--mint); border-radius: 9px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.nav-brand .logo svg { width: 20px; height: 20px; fill: white; }
+.nav-brand-text { font-size: 18px; font-weight: 800; color: white; letter-spacing: -.3px; }
+.nav-brand-text span { color: var(--mint); }
+
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-links a {
+  padding: 7px 13px; color: rgba(255,255,255,.7); font-size: 14px; font-weight: 500;
+  text-decoration: none; border-radius: 6px; transition: all .15s;
+}
+.nav-links a:hover { color: white; background: rgba(255,255,255,.08); }
+
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-emergency {
+  display: flex; align-items: center; gap: 6px; padding: 7px 14px;
+  background: var(--red); border-radius: 7px; color: white; font-size: 13px; font-weight: 700;
+  text-decoration: none; transition: background .15s;
+}
+.nav-emergency:hover { background: #C8333F; }
+.nav-emergency svg { width: 14px; height: 14px; fill: white; }
+.nav-appt {
+  padding: 8px 16px; background: var(--mint); border: none; border-radius: 7px;
+  color: white; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .15s;
+}
+.nav-appt:hover { background: #0DA07A; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--navy);
+  min-height: calc(100vh - 66px);
+  display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+  overflow: hidden; position: relative;
+}
+.hero-left { padding: 80px 60px 80px 0; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px;
+  background: rgba(16,185,141,.15); border: 1px solid rgba(16,185,141,.3);
+  border-radius: 999px; margin-bottom: 28px;
+}
+.hero-badge-dot { width: 7px; height: 7px; background: var(--mint); border-radius: 50%; animation: glow 2.5s ease-in-out infinite; }
+@keyframes glow { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,141,.4)} 50%{opacity:.7;box-shadow:0 0 0 5px rgba(16,185,141,0)} }
+.hero-badge-text { font-size: 12px; font-weight: 600; color: var(--mint); letter-spacing: .4px; }
+
+.hero h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(36px, 4vw, 54px); font-weight: 700; color: white; line-height: 1.12;
+  margin-bottom: 20px; letter-spacing: -.5px;
+}
+.hero h1 em { color: var(--mint); font-style: normal; }
+
+.hero-sub { font-size: 17px; color: rgba(255,255,255,.65); line-height: 1.7; margin-bottom: 36px; max-width: 440px; }
+
+.hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.btn-hero-primary {
+  padding: 14px 28px; background: var(--mint); border: none; border-radius: var(--radius);
+  color: white; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .15s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-hero-primary:hover { background: #0DA07A; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,141,.3); }
+.btn-hero-primary svg { width: 16px; height: 16px; fill: white; }
+.btn-hero-secondary {
+  padding: 13px 24px; background: transparent; border: 1.5px solid rgba(255,255,255,.25);
+  border-radius: var(--radius); color: rgba(255,255,255,.85); font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all .15s; text-decoration: none; display: inline-block;
+}
+.btn-hero-secondary:hover { border-color: rgba(255,255,255,.55); color: white; }
+
+.hero-stats { display: flex; gap: 32px; margin-top: 48px; padding-top: 36px; border-top: 1px solid rgba(255,255,255,.1); }
+.hero-stat-val { font-size: 28px; font-weight: 800; color: white; line-height: 1; }
+.hero-stat-val span { color: var(--mint); }
+.hero-stat-lbl { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 4px; font-weight: 500; }
+
+/* hero right — illustrated cross panel */
+.hero-right {
+  position: relative; height: 100%; min-height: calc(100vh - 66px);
+  background: var(--navy-md);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.hero-right::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(16,185,141,.12) 0%, transparent 70%);
+}
+.cross-wrap { position: relative; z-index: 1; }
+.cross-svg { width: 280px; height: 280px; opacity: .9; }
+.hero-pills {
+  position: absolute; display: flex; flex-direction: column; gap: 12px;
+}
+.hero-pills.left  { left: -140px; top: 50%; transform: translateY(-50%); }
+.hero-pills.right { right: -140px; top: 50%; transform: translateY(-50%); }
+.hero-pill {
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px; padding: 8px 16px; white-space: nowrap;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,.75);
+  display: flex; align-items: center; gap: 8px;
+}
+.hero-pill .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── TRUST STRIP ── */
+.trust-strip { background: var(--mint); padding: 0; }
+.trust-inner {
+  display: flex; align-items: stretch; justify-content: space-between;
+}
+.trust-item {
+  flex: 1; padding: 22px 28px; display: flex; align-items: center; gap: 14px;
+  border-right: 1px solid rgba(255,255,255,.2);
+}
+.trust-item:last-child { border-right: none; }
+.trust-item svg { width: 26px; height: 26px; fill: white; flex-shrink: 0; opacity: .9; }
+.trust-item-text strong { display: block; font-size: 14px; font-weight: 700; color: white; }
+.trust-item-text span   { font-size: 12px; color: rgba(255,255,255,.75); }
+
+/* ── SERVICES ── */
+.services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+.service-card {
+  background: white; border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 28px 24px; cursor: pointer; transition: all .2s; text-decoration: none; display: block;
+}
+.service-card:hover { border-color: var(--blue); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+.service-icon {
+  width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; margin-bottom: 18px; flex-shrink: 0;
+}
+.service-icon svg { width: 26px; height: 26px; }
+.service-card h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.service-card p  { font-size: 13px; color: var(--text-md); line-height: 1.6; }
+.service-link    { font-size: 13px; font-weight: 700; color: var(--blue); margin-top: 14px; display: flex; align-items: center; gap: 5px; }
+.service-link svg { width: 13px; height: 13px; fill: var(--blue); transition: transform .15s; }
+.service-card:hover .service-link svg { transform: translateX(3px); }
+
+/* ── HOW IT WORKS ── */
+.steps-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; position: relative; }
+.steps-row::before {
+  content: ''; position: absolute; top: 26px; left: calc(12.5% + 26px); right: calc(12.5% + 26px);
+  height: 2px; background: linear-gradient(to right, var(--mint), var(--blue)); z-index: 0;
+}
+.step { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 16px; position: relative; z-index: 1; }
+.step-num {
+  width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: white; margin-bottom: 18px; flex-shrink: 0;
+  box-shadow: 0 0 0 4px var(--cloud);
+}
+.step h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.step p  { font-size: 13px; color: var(--text-md); line-height: 1.6; }
+
+/* ── DEPARTMENTS ── */
+.depts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 48px; }
+.dept-card {
+  padding: 22px 18px; border-radius: 10px; border: 1.5px solid var(--border);
+  cursor: pointer; transition: all .18s; text-decoration: none; display: block;
+}
+.dept-card:hover { border-color: var(--mint); background: var(--mint-lt); }
+.dept-card svg { width: 28px; height: 28px; margin-bottom: 12px; }
+.dept-card h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.dept-card p  { font-size: 12px; color: var(--text-md); }
+.dept-tag     { display: inline-block; margin-top: 10px; font-size: 10px; font-weight: 700; letter-spacing: .5px; padding: 2px 8px; border-radius: 999px; }
+
+/* ── TESTIMONIALS ── */
+.testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+.testimonial-card {
+  background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 28px 24px;
+  box-shadow: var(--shadow);
+}
+.stars { color: var(--amber); font-size: 15px; margin-bottom: 14px; letter-spacing: 2px; }
+.testimonial-card blockquote { font-size: 14px; color: var(--text-md); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.author-avatar {
+  width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; font-weight: 800; color: white; flex-shrink: 0;
+}
+.author-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+.author-tag  { font-size: 11px; color: var(--text-lt); }
+
+/* ── APPOINTMENT ── */
+.appt-wrap {
+  background: var(--navy); border-radius: 20px; padding: 60px; display: grid;
+  grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;
+}
+.appt-left h2 { font-family: Georgia, serif; font-size: 32px; color: white; line-height: 1.2; margin-bottom: 14px; }
+.appt-left p  { color: rgba(255,255,255,.6); font-size: 15px; line-height: 1.7; margin-bottom: 28px; }
+.appt-contact { display: flex; flex-direction: column; gap: 12px; }
+.appt-contact-item { display: flex; align-items: center; gap: 12px; }
+.appt-contact-item svg { width: 18px; height: 18px; fill: var(--mint); flex-shrink: 0; }
+.appt-contact-item span { font-size: 14px; color: rgba(255,255,255,.75); }
+.appt-contact-item strong { color: white; }
+
+.appt-form { display: flex; flex-direction: column; gap: 14px; }
+.appt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.appt-field { display: flex; flex-direction: column; gap: 6px; }
+.appt-field label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .5px; }
+.appt-field input, .appt-field select, .appt-field textarea {
+  padding: 11px 13px; background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.15);
+  border-radius: 8px; font-size: 14px; color: white; outline: none; transition: border-color .15s;
+  font-family: inherit;
+}
+.appt-field input::placeholder, .appt-field textarea::placeholder { color: rgba(255,255,255,.3); }
+.appt-field input:focus, .appt-field select:focus, .appt-field textarea:focus {
+  border-color: var(--mint); background: rgba(255,255,255,.12);
+}
+.appt-field select option { background: var(--navy); color: white; }
+.appt-field textarea { min-height: 80px; resize: vertical; }
+.btn-book {
+  padding: 13px 28px; background: var(--mint); border: none; border-radius: var(--radius);
+  color: white; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;
+}
+.btn-book:hover { background: #0DA07A; }
+.btn-book svg { width: 16px; height: 16px; fill: white; }
+
+/* ── EMERGENCY BANNER ── */
+.emergency-banner {
+  background: linear-gradient(135deg, var(--red) 0%, #C8333F 100%);
+  padding: 40px 0;
+}
+.emergency-inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+}
+.emergency-left { display: flex; align-items: center; gap: 20px; }
+.emergency-icon {
+  width: 56px; height: 56px; background: rgba(255,255,255,.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.emergency-icon svg { width: 28px; height: 28px; fill: white; }
+.emergency-title { font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px; }
+.emergency-sub   { font-size: 14px; color: rgba(255,255,255,.8); }
+.emergency-num {
+  font-size: 36px; font-weight: 900; color: white; letter-spacing: -1px;
+  text-decoration: none; display: block;
+}
+.emergency-num small { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.7); display: block; letter-spacing: 0; }
+
+/* ── FOOTER ── */
+footer { background: var(--navy); padding: 64px 0 0; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.footer-brand p { font-size: 13px; color: rgba(255,255,255,.45); line-height: 1.8; margin-top: 14px; max-width: 260px; }
+.footer-col h5 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.4); margin-bottom: 14px; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.footer-col ul a { font-size: 13px; color: rgba(255,255,255,.6); text-decoration: none; transition: color .15s; }
+.footer-col ul a:hover { color: var(--mint); }
+.footer-bottom { padding: 20px 0; display: flex; align-items: center; justify-content: space-between; }
+.footer-bottom p { font-size: 12px; color: rgba(255,255,255,.3); }
+.footer-accred { display: flex; align-items: center; gap: 16px; }
+.accred-tag {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,.4); padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,.12); border-radius: 4px; letter-spacing: .4px;
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(11,31,58,.6); z-index: 500;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.modal-box {
+  background: white; border-radius: 16px; padding: 36px; max-width: 420px; width: 100%;
+  box-shadow: 0 30px 80px rgba(0,0,0,.3); text-align: center;
+}
+.modal-box .modal-icon {
+  width: 64px; height: 64px; background: var(--mint-lt); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
+}
+.modal-box .modal-icon svg { width: 32px; height: 32px; fill: var(--mint); }
+.modal-box h3 { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+.modal-box p  { font-size: 14px; color: var(--text-md); line-height: 1.7; margin-bottom: 24px; }
+.modal-close-btn {
+  padding: 11px 28px; background: var(--mint); border: none; border-radius: 8px;
+  color: white; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s;
+}
+.modal-close-btn:hover { background: #0DA07A; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-right { display: none; }
+  .hero-left { padding: 60px 0; }
+  .services-grid, .depts-grid { grid-template-columns: 1fr 1fr; }
+  .steps-row { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .steps-row::before { display: none; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .appt-wrap { grid-template-columns: 1fr; padding: 36px 28px; gap: 36px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .trust-inner { flex-wrap: wrap; }
+  .trust-item { flex: 1 0 50%; }
+}
+@media (max-width: 640px) {
+  .services-grid, .depts-grid, .steps-row { grid-template-columns: 1fr; }
+  .appt-row { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .hero-stats { flex-wrap: wrap; gap: 20px; }
+  .section { padding: 56px 0; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav class="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand">
+        <div class="logo">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+        </div>
+        <span class="nav-brand-text">Med<span>Link</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#services">Services</a>
+        <a href="#departments">Departments</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#appointment">Appointments</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="nav-right">
+        <a href="#emergency" class="nav-emergency">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          Emergency
+        </a>
+        <button class="nav-appt" onclick="scrollTo('#appointment')">Book Appointment</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="home">
+  <div class="container" style="display:contents">
+    <div class="hero-left" style="padding-left:max(28px, calc((100vw - 1120px)/2 + 28px))">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        <span class="hero-badge-text">Accepting new patients · Open 24 / 7</span>
+      </div>
+      <h1>Care you can<br><em>count on,</em><br>whenever you need it.</h1>
+      <p class="hero-sub">MedLink Hospital brings world-class specialists, modern diagnostics, and compassionate nursing together under one roof — for you and your family.</p>
+      <div class="hero-ctas">
+        <button class="btn-hero-primary" onclick="scrollTo('#appointment')">
+          <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          Book Appointment
+        </button>
+        <a href="#services" class="btn-hero-secondary">Explore Services</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val">25<span>k+</span></div>
+          <div class="hero-stat-lbl">Patients served</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">120<span>+</span></div>
+          <div class="hero-stat-lbl">Specialist doctors</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">18<span></span></div>
+          <div class="hero-stat-lbl">Departments</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">24<span>/7</span></div>
+          <div class="hero-stat-lbl">Emergency care</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="hero-right">
+      <div class="cross-wrap">
+        <!-- Glowing medical cross SVG -->
+        <svg class="cross-svg" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="crossGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#10B98D" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#10B98D" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Glow ring -->
+          <circle cx="140" cy="140" r="130" fill="url(#crossGrad)"/>
+          <circle cx="140" cy="140" r="110" stroke="#10B98D" stroke-width="1" stroke-opacity="0.15"/>
+          <circle cx="140" cy="140" r="80"  stroke="#10B98D" stroke-width="1" stroke-opacity="0.2"/>
+          <!-- Cross body -->
+          <g filter="url(#glow)">
+            <rect x="108" y="60" width="64" height="160" rx="14" fill="#10B98D" fill-opacity="0.9"/>
+            <rect x="60"  y="108" width="160" height="64" rx="14" fill="#10B98D" fill-opacity="0.9"/>
+          </g>
+          <!-- Cross highlight -->
+          <rect x="108" y="60" width="30" height="160" rx="14" fill="white" fill-opacity="0.08"/>
+          <rect x="60"  y="108" width="160" height="30" rx="14" fill="white" fill-opacity="0.08"/>
+          <!-- Center dot -->
+          <circle cx="140" cy="140" r="12" fill="white" fill-opacity="0.3"/>
+          <circle cx="140" cy="140" r="6"  fill="white" fill-opacity="0.7"/>
+        </svg>
+
+        <!-- Floating pills -->
+        <div style="position:absolute;top:20px;right:-160px;display:flex;flex-direction:column;gap:10px">
+          <div class="hero-pill"><div class="dot" style="background:#10B98D"></div>General Medicine</div>
+          <div class="hero-pill"><div class="dot" style="background:#2B7FE0"></div>Cardiology</div>
+          <div class="hero-pill"><div class="dot" style="background:#F59E0B"></div>Pediatrics</div>
+        </div>
+        <div style="position:absolute;bottom:20px;left:-170px;display:flex;flex-direction:column;gap:10px">
+          <div class="hero-pill"><div class="dot" style="background:#E84855"></div>Emergency 24/7</div>
+          <div class="hero-pill"><div class="dot" style="background:#8B5CF6"></div>Neurology</div>
+          <div class="hero-pill"><div class="dot" style="background:#10B98D"></div>Orthopedics</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TRUST STRIP ══════════ -->
+<div class="trust-strip">
+  <div class="container">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <div class="trust-item-text"><strong>JCI Accredited</strong><span>International quality standard</span></div>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+        <div class="trust-item-text"><strong>Award-Winning Care</strong><span>Best Hospital 2024 — regional</span></div>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <div class="trust-item-text"><strong>120+ Specialists</strong><span>Board-certified physicians</span></div>
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <div class="trust-item-text"><strong>3 Locations</strong><span>City Centre · North · Airport</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SERVICES ══════════ -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="eyebrow">What we offer</div>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div>
+        <h2 class="section-title">Comprehensive care<br>from day one</h2>
+        <p class="section-sub">Whether it's a routine check-up or a complex procedure, our teams are here at every step.</p>
+      </div>
+    </div>
+    <div class="services-grid">
+      <a href="#appointment" class="service-card" style="text-decoration:none">
+        <div class="service-icon" style="background:#E6F9F4"><svg viewBox="0 0 24 24" fill="#10B98D"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+        <h3>General Outpatient</h3>
+        <p>Consultations, health screenings, referrals, and routine check-ups with our experienced GPs.</p>
+        <div class="service-link">Learn more <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+      </a>
+      <a href="#appointment" class="service-card" style="text-decoration:none">
+        <div class="service-icon" style="background:#EBF4FF"><svg viewBox="0 0 24 24" fill="#2B7FE0"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>
+        <h3>Emergency & Trauma</h3>
+        <p>24-hour accident and emergency services with fully equipped trauma bays and rapid triage.</p>
+        <div class="service-link">Learn more <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+      </a>
+      <a href="#appointment" class="service-card" style="text-decoration:none">
+        <div class="service-icon" style="background:#F3F0FF"><svg viewBox="0 0 24 24" fill="#8B5CF6"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
+        <h3>Specialist Consultations</h3>
+        <p>Access cardiologists, neurologists, orthopedic surgeons, and more — referred or self-referred.</p>
+        <div class="service-link">Learn more <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+      </a>
+      <a href="#appointment" class="service-card" style="text-decoration:none">
+        <div class="service-icon" style="background:#FFF7ED"><svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3z"/></svg></div>
+        <h3>Surgery & Procedures</h3>
+        <p>State-of-the-art operating theatres for elective, laparoscopic, and urgent surgical procedures.</p>
+        <div class="service-link">Learn more <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+      </a>
+      <a href="#appointment" class="service-card" style="text-decoration:none">
+        <div class="service-icon" style="background:#FEF2F2"><svg viewBox="0 0 24 24" fill="#E84855"><path d="M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z"/></svg></div>
+        <h3>Diagnostics & Imaging</h3>
+        <p>Full-service lab, digital X-ray, MRI, CT scan, echocardiography, and ultrasound on-site.</p>
+        <div class="service-link">Learn more <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+      </a>
+      <a href="#appointment" class="service-card" style="text-decoration:none">
+        <div class="service-icon" style="background:#ECFDF5"><svg viewBox="0 0 24 24" fill="#059669"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+        <h3>Maternity & Child Health</h3>
+        <p>Antenatal care, delivery suites, neonatal unit, and paediatric wards staffed around the clock.</p>
+        <div class="service-link">Learn more <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ HOW IT WORKS ══════════ -->
+<section class="section section-alt" id="how-it-works">
+  <div class="container">
+    <div class="center">
+      <div class="eyebrow">Getting started</div>
+      <h2 class="section-title">From booking to bedside</h2>
+      <p class="section-sub">Getting care at MedLink is straightforward. Here's what to expect.</p>
+    </div>
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-num" style="background:var(--mint)">1</div>
+        <h4>Book Online or Call</h4>
+        <p>Fill in the appointment form below or call our front desk. We'll confirm within the hour.</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--blue)">2</div>
+        <h4>Check In at Reception</h4>
+        <p>Arrive 15 minutes early. Our staff will verify your details and direct you to the right unit.</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--navy-lt)">3</div>
+        <h4>See Your Doctor</h4>
+        <p>Your assigned physician reviews your history, runs any needed tests, and outlines a care plan.</p>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--navy)">4</div>
+        <h4>Follow-Up & Support</h4>
+        <p>We send you a care summary and follow up to make sure your recovery is on track.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ DEPARTMENTS ══════════ -->
+<section class="section" id="departments">
+  <div class="container">
+    <div class="eyebrow">Our departments</div>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:0">
+      <div>
+        <h2 class="section-title">18 specialized departments,<br>one coordinated team</h2>
+      </div>
+    </div>
+    <div class="depts-grid">
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#E84855"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
+        <h4>Cardiology</h4>
+        <p>Heart and vascular care</p>
+        <span class="dept-tag" style="background:#FEF2F2;color:#E84855">Open daily</span>
+      </a>
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#8B5CF6"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/></svg>
+        <h4>Neurology</h4>
+        <p>Brain and nervous system</p>
+        <span class="dept-tag" style="background:#F3F0FF;color:#8B5CF6">Open daily</span>
+      </a>
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+        <h4>Orthopedics</h4>
+        <p>Bones, joints, and sports</p>
+        <span class="dept-tag" style="background:#FFFBEB;color:#D97706">Mon – Sat</span>
+      </a>
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#2B7FE0"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <h4>Pediatrics</h4>
+        <p>Infant, child, and teen health</p>
+        <span class="dept-tag" style="background:#EBF4FF;color:#2B7FE0">Open daily</span>
+      </a>
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#10B98D"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <h4>Obstetrics & Gynaecology</h4>
+        <p>Women's health and maternity</p>
+        <span class="dept-tag" style="background:#E6F9F4;color:#10B98D">Open daily</span>
+      </a>
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#0284C7"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/></svg>
+        <h4>Psychiatry</h4>
+        <p>Mental health and counselling</p>
+        <span class="dept-tag" style="background:#F0F9FF;color:#0284C7">Mon – Fri</span>
+      </a>
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#059669"><path d="M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z"/></svg>
+        <h4>Oncology</h4>
+        <p>Cancer diagnosis and treatment</p>
+        <span class="dept-tag" style="background:#ECFDF5;color:#059669">By referral</span>
+      </a>
+      <a href="#appointment" class="dept-card" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" fill="#DC2626"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <h4>Emergency Medicine</h4>
+        <p>Acute and trauma care</p>
+        <span class="dept-tag" style="background:#FEF2F2;color:#DC2626">24 / 7</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIALS ══════════ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="center">
+      <div class="eyebrow">Patient stories</div>
+      <h2 class="section-title">What our patients say</h2>
+      <p class="section-sub">Real experiences from the people whose care matters most to us.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The cardiology team at MedLink was exceptional. From the moment I arrived with chest pain, I felt in safe hands. My stent procedure went perfectly and I was home within three days."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:#E84855">R</div>
+          <div>
+            <div class="author-name">Robert A.</div>
+            <div class="author-tag">Cardiology patient · 2024</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"I delivered both my children here. The midwives and obstetricians were so supportive, and the maternity ward is modern and calm. MedLink will always hold a special place for our family."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:#10B98D">S</div>
+          <div>
+            <div class="author-name">Sandra T.</div>
+            <div class="author-tag">Maternity patient · 2023 & 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Booking was easy, the waiting time was short, and Dr. Reyes explained my diagnosis clearly without rushing. The follow-up call a week later was a lovely touch I didn't expect."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:#2B7FE0">J</div>
+          <div>
+            <div class="author-name">James O.</div>
+            <div class="author-tag">Neurology patient · 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ EMERGENCY BANNER ══════════ -->
+<div class="emergency-banner" id="emergency">
+  <div class="container">
+    <div class="emergency-inner">
+      <div class="emergency-left">
+        <div class="emergency-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        </div>
+        <div>
+          <div class="emergency-title">Medical Emergency?</div>
+          <div class="emergency-sub">Our emergency department is open 24 hours, 7 days a week — including public holidays. Walk-ins welcome.</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <a href="tel:+18005556789" class="emergency-num">0800 555 6789</a>
+        <small style="color:rgba(255,255,255,.7);font-size:12px">Free emergency hotline — available 24/7</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ APPOINTMENT FORM ══════════ -->
+<section class="section section-alt" id="appointment">
+  <div class="container">
+    <div class="appt-wrap">
+      <div class="appt-left">
+        <div class="eyebrow" style="color:rgba(255,255,255,.5)">Book your visit</div>
+        <h2>Schedule an appointment today</h2>
+        <p>Our team will confirm your booking within the hour during working hours, or first thing the next morning.</p>
+        <div class="appt-contact">
+          <div class="appt-contact-item">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            <span><strong>+1 (555) 123-4567</strong><br>General appointments</span>
+          </div>
+          <div class="appt-contact-item">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <span><strong>appointments@medlink.hospital</strong><br>Non-urgent enquiries</span>
+          </div>
+          <div class="appt-contact-item">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span><strong>14 Hospital Drive, City Centre</strong><br>Free parking available</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="appt-form">
+          <div class="appt-row">
+            <div class="appt-field">
+              <label>First Name</label>
+              <input type="text" id="appt-fname" placeholder="Your first name">
+            </div>
+            <div class="appt-field">
+              <label>Last Name</label>
+              <input type="text" id="appt-lname" placeholder="Your last name">
+            </div>
+          </div>
+          <div class="appt-row">
+            <div class="appt-field">
+              <label>Phone Number</label>
+              <input type="tel" id="appt-phone" placeholder="+1 (555) 000-0000">
+            </div>
+            <div class="appt-field">
+              <label>Email Address</label>
+              <input type="email" id="appt-email" placeholder="you@email.com">
+            </div>
+          </div>
+          <div class="appt-row">
+            <div class="appt-field">
+              <label>Department</label>
+              <select id="appt-dept">
+                <option value="">Select department…</option>
+                <option>General Outpatient</option>
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Orthopedics</option>
+                <option>Pediatrics</option>
+                <option>Obstetrics & Gynaecology</option>
+                <option>Oncology</option>
+                <option>Psychiatry</option>
+                <option>Emergency</option>
+                <option>Other / Not Sure</option>
+              </select>
+            </div>
+            <div class="appt-field">
+              <label>Preferred Date</label>
+              <input type="date" id="appt-date">
+            </div>
+          </div>
+          <div class="appt-field">
+            <label>Brief reason for visit</label>
+            <textarea id="appt-reason" placeholder="Describe your symptoms or the reason for your visit…"></textarea>
+          </div>
+          <button class="btn-book" onclick="submitAppt()">
+            <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            Confirm Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-brand" style="text-decoration:none">
+          <div class="logo"><svg viewBox="0 0 24 24" fill="white"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
+          <span class="nav-brand-text">Med<span>Link</span></span>
+        </a>
+        <p>Committed to delivering compassionate, expert healthcare to every patient who walks through our doors — since 1988.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="#services">General Outpatient</a></li>
+          <li><a href="#services">Emergency & Trauma</a></li>
+          <li><a href="#services">Surgery</a></li>
+          <li><a href="#services">Diagnostics</a></li>
+          <li><a href="#services">Maternity</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Information</h5>
+        <ul>
+          <li><a href="#departments">Departments</a></li>
+          <li><a href="#how-it-works">Patient Guide</a></li>
+          <li><a href="#appointment">Book Appointment</a></li>
+          <li><a href="#emergency">Emergency</a></li>
+          <li><a href="#">Visiting Hours</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="#">14 Hospital Drive, City Centre</a></li>
+          <li><a href="tel:+15551234567">+1 (555) 123-4567</a></li>
+          <li><a href="mailto:hello@medlink.mail.com">hello@medlink.mail.com</a></li>
+          <li><a href="#">Emergency: 0800 555 6789</a></li>
+          <li><a href="#">Open 24 hours / 7 days</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 MedLink Hospital. All rights reserved.</p>
+      <div class="footer-accred">
+        <span class="accred-tag">JCI Accredited</span>
+        <span class="accred-tag">ISO 9001:2015</span>
+        <span class="accred-tag">HIPAA Compliant</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════ SUCCESS MODAL ══════════ -->
+<div id="success-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSuccessModal()">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    </div>
+    <h3>Appointment Requested!</h3>
+    <p>Thank you, <strong id="modal-patient-name"></strong>. Your appointment request has been received. Our team will call you within the hour to confirm your booking details.</p>
+    <button class="modal-close-btn" onclick="closeSuccessModal()">Done</button>
+  </div>
+</div>
+
+<script>
+function scrollTo(hash) {
+  document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+function submitAppt() {
+  const fname = document.getElementById('appt-fname').value.trim();
+  const lname = document.getElementById('appt-lname').value.trim();
+  const phone = document.getElementById('appt-phone').value.trim();
+
+  if (!fname || !lname) {
+    alert('Please enter your first and last name.');
+    return;
+  }
+  if (!phone) {
+    alert('Please enter a phone number so we can confirm your booking.');
+    return;
+  }
+
+  document.getElementById('modal-patient-name').textContent = fname + ' ' + lname;
+  document.getElementById('success-modal').style.display = 'flex';
+
+  // Clear form
+  ['appt-fname','appt-lname','appt-phone','appt-email','appt-reason'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('appt-dept').value = '';
+  document.getElementById('appt-date').value = '';
+}
+
+function closeSuccessModal() {
+  document.getElementById('success-modal').style.display = 'none';
+}
+
+// Set min date for appointment picker to today
+(function() {
+  const today = new Date().toISOString().split('T')[0];
+  const f = document.getElementById('appt-date');
+  if (f) f.min = today;
+})();
+</script>
+</body>
+</html>
