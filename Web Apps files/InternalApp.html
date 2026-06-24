@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedLink HMS — Patient Management</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:      #0A6E6E;
+    --teal-dk:   #074F4F;
+    --teal-lt:   #E0F2F2;
+    --slate:     #1E293B;
+    --slate-md:  #475569;
+    --slate-lt:  #94A3B8;
+    --ice:       #F0F7F7;
+    --white:     #FFFFFF;
+    --red:       #DC2626;
+    --red-lt:    #FEF2F2;
+    --amber:     #D97706;
+    --amber-lt:  #FFFBEB;
+    --green:     #059669;
+    --green-lt:  #ECFDF5;
+    --border:    #CBD5E1;
+    --shadow:    0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+    --radius:    8px;
+    --sidebar-w: 230px;
+  }
+
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--ice); color: var(--slate); font-size: 14px; line-height: 1.5; }
+
+  /* ───────── UTILITIES ───────── */
+  .hidden { display: none !important; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: .3px;
+  }
+  .badge-green  { background: var(--green-lt);  color: var(--green); }
+  .badge-amber  { background: var(--amber-lt);  color: var(--amber); }
+  .badge-red    { background: var(--red-lt);    color: var(--red);   }
+  .badge-teal   { background: var(--teal-lt);   color: var(--teal);  }
+  .badge-slate  { background: #F1F5F9; color: var(--slate-md); }
+
+  button { cursor: pointer; font-family: inherit; }
+  input, select, textarea { font-family: inherit; }
+
+  /* ───────── LOGIN ───────── */
+  #screen-login {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--teal-dk) 0%, var(--teal) 60%, #14B8A6 100%);
+  }
+  .login-card {
+    background: var(--white); border-radius: 16px; padding: 44px 40px 40px;
+    width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  }
+  .login-logo {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+  }
+  .login-logo .icon {
+    width: 40px; height: 40px; background: var(--teal); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .login-logo .icon svg { width: 22px; height: 22px; fill: white; }
+  .login-logo h1 { font-size: 20px; font-weight: 700; color: var(--teal-dk); line-height: 1.1; }
+  .login-logo small { font-size: 11px; color: var(--slate-lt); font-weight: 400; display: block; }
+  .login-card h2 { font-size: 22px; font-weight: 700; color: var(--slate); margin-bottom: 4px; }
+  .login-card p  { color: var(--slate-md); font-size: 13px; margin-bottom: 24px; }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--slate-md); margin-bottom: 6px; letter-spacing: .4px; text-transform: uppercase; }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-size: 14px; color: var(--slate); background: var(--white); outline: none; transition: border-color .15s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(10,110,110,.12); }
+
+  .btn-primary {
+    width: 100%; padding: 11px; background: var(--teal); color: white; border: none;
+    border-radius: var(--radius); font-size: 14px; font-weight: 600; transition: background .15s;
+  }
+  .btn-primary:hover { background: var(--teal-dk); }
+
+  .login-hint {
+    margin-top: 20px; padding: 12px; background: var(--ice); border-radius: var(--radius);
+    font-size: 12px; color: var(--slate-md); line-height: 1.7;
+  }
+  .login-hint strong { color: var(--slate); display: block; margin-bottom: 2px; }
+  #login-error {
+    margin-bottom: 14px; padding: 10px 12px; background: var(--red-lt); border-left: 3px solid var(--red);
+    border-radius: var(--radius); color: var(--red); font-size: 13px; font-weight: 500;
+  }
+
+  /* ───────── APP SHELL ───────── */
+  #screen-app { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w); background: var(--slate); display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  }
+  .sidebar-top {
+    padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .sidebar-brand { display: flex; align-items: center; gap: 9px; }
+  .sidebar-brand .icon {
+    width: 32px; height: 32px; background: var(--teal); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .sidebar-brand .icon svg { width: 18px; height: 18px; fill: white; }
+  .sidebar-brand span { font-size: 15px; font-weight: 700; color: white; }
+  .sidebar-brand small { display: block; font-size: 10px; color: rgba(255,255,255,.45); font-weight: 400; }
+
+  .sidebar-pulse {
+    display: flex; align-items: center; gap: 7px; margin-top: 12px;
+    font-size: 11px; color: rgba(255,255,255,.5); font-weight: 500; letter-spacing: .3px;
+  }
+  .pulse-dot {
+    width: 7px; height: 7px; background: #10B981; border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+
+  .sidebar-user {
+    padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .user-info { display: flex; align-items: center; gap: 10px; }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--teal); display: flex;
+    align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0;
+  }
+  .user-name  { font-size: 13px; font-weight: 600; color: white; }
+  .user-role  { font-size: 11px; color: rgba(255,255,255,.45); }
+
+  .sidebar-nav { flex: 1; padding: 10px 0; overflow-y: auto; }
+  .nav-section { padding: 14px 16px 6px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,.3); letter-spacing: .8px; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 16px; margin: 1px 8px;
+    border-radius: 6px; color: rgba(255,255,255,.65); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .15s; user-select: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.08); color: white; }
+  .nav-item.active { background: var(--teal); color: white; }
+  .nav-item svg { width: 16px; height: 16px; opacity: .8; flex-shrink: 0; }
+  .nav-item.active svg { opacity: 1; }
+
+  .sidebar-foot { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,.08); }
+  .btn-logout {
+    width: 100%; display: flex; align-items: center; gap: 9px; padding: 9px 12px;
+    background: none; border: 1px solid rgba(255,255,255,.15); border-radius: 6px;
+    color: rgba(255,255,255,.55); font-size: 13px; font-weight: 500; transition: all .15s;
+  }
+  .btn-logout:hover { background: rgba(220,38,38,.15); border-color: rgba(220,38,38,.4); color: #FCA5A5; }
+  .btn-logout svg { width: 15px; height: 15px; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    background: white; border-bottom: 1px solid var(--border); padding: 0 28px;
+    height: 60px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow);
+  }
+  .topbar-title { font-size: 17px; font-weight: 700; color: var(--slate); }
+  .topbar-meta  { font-size: 12px; color: var(--slate-lt); margin-top: 1px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-time  { font-size: 12px; color: var(--slate-md); font-weight: 500; }
+
+  /* CONTENT */
+  .page-content { padding: 28px; flex: 1; }
+
+  /* ───────── DASHBOARD ───────── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: white; border-radius: var(--radius); padding: 20px 22px;
+    box-shadow: var(--shadow); border-left: 4px solid transparent;
+  }
+  .stat-card.teal   { border-color: var(--teal); }
+  .stat-card.green  { border-color: var(--green); }
+  .stat-card.amber  { border-color: var(--amber); }
+  .stat-card.red    { border-color: var(--red); }
+  .stat-label { font-size: 11px; font-weight: 700; color: var(--slate-lt); text-transform: uppercase; letter-spacing: .5px; }
+  .stat-val   { font-size: 30px; font-weight: 800; color: var(--slate); margin: 4px 0 2px; line-height: 1; }
+  .stat-sub   { font-size: 12px; color: var(--slate-md); }
+
+  .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 20px 22px;
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--slate); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .card-title span { font-size: 11px; font-weight: 500; color: var(--slate-lt); }
+
+  /* Recent patients table */
+  .mini-table { width: 100%; border-collapse: collapse; }
+  .mini-table th { font-size: 10px; font-weight: 700; color: var(--slate-lt); text-transform: uppercase; letter-spacing: .5px; padding: 0 0 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  .mini-table td { padding: 9px 0; border-bottom: 1px solid #F1F5F9; font-size: 13px; vertical-align: middle; }
+  .mini-table tr:last-child td { border-bottom: none; }
+
+  /* Ward list */
+  .ward-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F1F5F9; }
+  .ward-item:last-child { border-bottom: none; }
+  .ward-name { font-size: 13px; font-weight: 600; color: var(--slate); }
+  .ward-cap  { font-size: 11px; color: var(--slate-md); }
+  .ward-bar-wrap { flex: 1; margin: 0 14px; height: 6px; background: #F1F5F9; border-radius: 99px; overflow: hidden; }
+  .ward-bar { height: 100%; border-radius: 99px; background: var(--teal); }
+  .ward-bar.amber { background: var(--amber); }
+  .ward-bar.red   { background: var(--red); }
+
+  /* ───────── PATIENT LIST ───────── */
+  .list-toolbar {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; fill: var(--slate-lt); pointer-events: none; }
+  .search-wrap input {
+    width: 100%; padding: 9px 12px 9px 34px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-size: 13px; outline: none; background: white; transition: border-color .15s;
+  }
+  .search-wrap input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(10,110,110,.1); }
+
+  .filter-select {
+    padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-size: 13px; color: var(--slate); background: white; outline: none; cursor: pointer;
+  }
+  .filter-select:focus { border-color: var(--teal); }
+
+  .btn-add {
+    display: flex; align-items: center; gap: 7px; padding: 9px 16px;
+    background: var(--teal); color: white; border: none; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; transition: background .15s; white-space: nowrap;
+  }
+  .btn-add:hover { background: var(--teal-dk); }
+  .btn-add svg { width: 14px; height: 14px; fill: white; }
+
+  .table-wrap {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    font-size: 11px; font-weight: 700; color: var(--slate-lt); text-transform: uppercase; letter-spacing: .5px;
+    padding: 12px 16px; text-align: left; background: #F8FAFC; border-bottom: 1px solid var(--border);
+  }
+  .data-table td { padding: 13px 16px; border-bottom: 1px solid #F1F5F9; font-size: 13px; color: var(--slate); vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: #FAFCFC; }
+  .data-table .patient-id { font-size: 11px; font-weight: 700; color: var(--slate-lt); font-family: monospace; }
+  .data-table .patient-name { font-weight: 600; color: var(--slate); }
+  .data-table .doc-name { color: var(--slate-md); }
+
+  .action-btn {
+    display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px;
+    border-radius: 5px; font-size: 12px; font-weight: 600; border: 1.5px solid;
+    transition: all .15s; cursor: pointer;
+  }
+  .action-btn.view   { color: var(--teal);  border-color: var(--teal);  background: var(--teal-lt); }
+  .action-btn.edit   { color: var(--amber); border-color: var(--amber); background: var(--amber-lt); }
+  .action-btn.del    { color: var(--red);   border-color: var(--red);   background: var(--red-lt); }
+  .action-btn:hover  { filter: brightness(.93); }
+  .action-btn svg    { width: 12px; height: 12px; }
+
+  /* ───────── MODAL ───────── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,23,42,.5); z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    backdrop-filter: blur(2px);
+  }
+  .modal {
+    background: white; border-radius: 12px; width: 100%; max-width: 580px;
+    max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,.25);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: white; z-index: 1;
+  }
+  .modal-header h3 { font-size: 16px; font-weight: 700; color: var(--slate); }
+  .modal-close {
+    width: 30px; height: 30px; border: none; background: #F1F5F9; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-md);
+    font-size: 18px; line-height: 1; transition: background .15s;
+  }
+  .modal-close:hover { background: var(--red-lt); color: var(--red); }
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px;
+    position: sticky; bottom: 0; background: white;
+  }
+  .btn-cancel {
+    padding: 9px 18px; background: white; border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; color: var(--slate-md); transition: all .15s;
+  }
+  .btn-cancel:hover { background: #F8FAFC; border-color: var(--slate-md); }
+  .btn-save {
+    padding: 9px 20px; background: var(--teal); border: none; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; color: white; transition: background .15s;
+  }
+  .btn-save:hover { background: var(--teal-dk); }
+  .btn-danger {
+    padding: 9px 18px; background: var(--red); border: none; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; color: white; transition: background .15s;
+  }
+  .btn-danger:hover { background: #B91C1C; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid .full { grid-column: span 2; }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+  .form-field label { font-size: 11px; font-weight: 700; color: var(--slate-md); text-transform: uppercase; letter-spacing: .4px; }
+  .form-field input, .form-field select, .form-field textarea {
+    padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 6px;
+    font-size: 13px; color: var(--slate); outline: none; transition: border-color .15s; background: white;
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+    border-color: var(--teal); box-shadow: 0 0 0 3px rgba(10,110,110,.1);
+  }
+  .form-field textarea { resize: vertical; min-height: 72px; }
+
+  /* VIEW PATIENT */
+  .view-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .view-item { padding: 10px 0; border-bottom: 1px solid #F1F5F9; }
+  .view-item:nth-last-child(-n+2) { border-bottom: none; }
+  .view-label { font-size: 10px; font-weight: 700; color: var(--slate-lt); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+  .view-val   { font-size: 13px; color: var(--slate); font-weight: 500; }
+  .view-section { font-size: 12px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .5px; margin: 16px 0 10px; }
+  .view-notes { padding: 12px; background: var(--ice); border-radius: 6px; font-size: 13px; color: var(--slate-md); margin-top: 4px; }
+
+  /* ───────── REPORTS PAGE ───────── */
+  .report-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .report-card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px;
+    cursor: pointer; transition: box-shadow .15s; border: 2px solid transparent;
+  }
+  .report-card:hover { box-shadow: var(--shadow-md); border-color: var(--teal-lt); }
+  .report-card .rc-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .report-card .rc-icon svg { width: 22px; height: 22px; }
+  .report-card h4 { font-size: 14px; font-weight: 700; color: var(--slate); margin-bottom: 4px; }
+  .report-card p  { font-size: 12px; color: var(--slate-md); }
+
+  /* ───────── USERS PAGE ───────── */
+  .user-card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px;
+    display: flex; align-items: center; gap: 14px; margin-bottom: 12px;
+  }
+  .user-card-avatar {
+    width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 800; color: white; flex-shrink: 0;
+  }
+  .user-card-info { flex: 1; }
+  .user-card-name  { font-size: 14px; font-weight: 700; color: var(--slate); }
+  .user-card-email { font-size: 12px; color: var(--slate-md); }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+    background: var(--slate); color: white; padding: 12px 20px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 500; box-shadow: var(--shadow-md);
+    transform: translateY(80px); opacity: 0; transition: all .3s ease;
+    display: flex; align-items: center; gap: 9px; max-width: 320px;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success { border-left: 4px solid var(--green); }
+  #toast.error   { border-left: 4px solid var(--red); }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--slate-md); }
+  .empty-state svg { width: 48px; height: 48px; fill: var(--border); margin-bottom: 12px; }
+  .empty-state h4 { font-size: 15px; font-weight: 700; color: var(--slate); margin-bottom: 4px; }
+  .empty-state p  { font-size: 13px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .dash-grid  { grid-template-columns: 1fr; }
+    .report-cards { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      </div>
+      <div>
+        <h1>MedLink HMS</h1>
+        <small>Hospital Management System</small>
+      </div>
+    </div>
+    <h2>Welcome back</h2>
+    <p>Sign in to access the patient management portal</p>
+    <div id="login-error" class="hidden"></div>
+    <div class="field">
+      <label>Username</label>
+      <input id="login-user" type="text" placeholder="Enter your username" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input id="login-pass" type="password" placeholder="Enter your password">
+    </div>
+    <div class="field">
+      <label>Department</label>
+      <select id="login-dept">
+        <option value="">Select department</option>
+        <option>General</option>
+        <option>Cardiology</option>
+        <option>Pediatrics</option>
+        <option>Neurology</option>
+        <option>Orthopedics</option>
+        <option>Emergency</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Sign In</button>
+    <div class="login-hint">
+      <strong>Demo Credentials</strong>
+      admin / admin123 &nbsp;·&nbsp; Role: Admin<br>
+      drsmith / doctor123 &nbsp;·&nbsp; Role: Doctor<br>
+      nurse1 / nurse123 &nbsp;·&nbsp; Role: Nurse
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP SCREEN ═══════════════ -->
+<div id="screen-app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-brand">
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z"/></svg>
+        </div>
+        <div>
+          <span>MedLink</span>
+          <small>HMS v1.0</small>
+        </div>
+      </div>
+      <div class="sidebar-pulse"><div class="pulse-dot"></div> Network Online</div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <div class="user-avatar" id="sb-avatar">A</div>
+        <div>
+          <div class="user-name" id="sb-name">—</div>
+          <div class="user-role" id="sb-role">—</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('patients')">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        Patients
+      </div>
+      <div class="nav-item admin-only hidden" onclick="showPage('users')">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Staff Users
+      </div>
+      <div class="nav-section">Tools</div>
+      <div class="nav-item" onclick="showPage('reports')">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+        Reports
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button class="btn-logout" onclick="doLogout()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+        <div class="topbar-meta" id="topbar-meta">Overview of hospital activity</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-time" id="topbar-time"></div>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ─── DASHBOARD PAGE ─── -->
+      <div id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card teal">
+            <div class="stat-label">Total Patients</div>
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-sub">Registered in system</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Admitted</div>
+            <div class="stat-val" id="stat-admitted">0</div>
+            <div class="stat-sub">Currently in-patient</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Out-patient</div>
+            <div class="stat-val" id="stat-outpatient">0</div>
+            <div class="stat-sub">Awaiting / visits</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-label">Critical</div>
+            <div class="stat-val" id="stat-critical">0</div>
+            <div class="stat-sub">High priority cases</div>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-title">Recent Patients <span>Last 5 added</span></div>
+            <table class="mini-table">
+              <thead><tr><th>Name</th><th>Ward</th><th>Status</th></tr></thead>
+              <tbody id="recent-patients-body"></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-title">Ward Occupancy</div>
+            <div id="ward-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── PATIENTS PAGE ─── -->
+      <div id="page-patients" class="hidden">
+        <div class="list-toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="search-input" placeholder="Search patients by name, ID, or doctor…" oninput="renderPatientTable()">
+          </div>
+          <select class="filter-select" id="filter-status" onchange="renderPatientTable()">
+            <option value="">All Statuses</option>
+            <option>Admitted</option>
+            <option>Out-patient</option>
+            <option>Discharged</option>
+            <option>Critical</option>
+          </select>
+          <select class="filter-select" id="filter-ward" onchange="renderPatientTable()">
+            <option value="">All Wards</option>
+            <option>General</option>
+            <option>Cardiology</option>
+            <option>Pediatrics</option>
+            <option>Neurology</option>
+            <option>Orthopedics</option>
+            <option>Emergency</option>
+            <option>ICU</option>
+          </select>
+          <button class="btn-add" onclick="openAddModal()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add Patient
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Age / Sex</th>
+                <th>Ward</th>
+                <th>Doctor</th>
+                <th>Status</th>
+                <th>Admitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="patient-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── REPORTS PAGE ─── -->
+      <div id="page-reports" class="hidden">
+        <div class="report-cards">
+          <div class="report-card" onclick="showToast('Generating admissions report…', 'success')">
+            <div class="rc-icon" style="background:#E0F2F2"><svg viewBox="0 0 24 24" fill="#0A6E6E"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+            <h4>Admissions Report</h4>
+            <p>Patient intake summary by ward and date range</p>
+          </div>
+          <div class="report-card" onclick="showToast('Generating discharge summary…', 'success')">
+            <div class="rc-icon" style="background:#ECFDF5"><svg viewBox="0 0 24 24" fill="#059669"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+            <h4>Discharge Summary</h4>
+            <p>Patients discharged in selected period</p>
+          </div>
+          <div class="report-card" onclick="showToast('Generating critical cases report…', 'success')">
+            <div class="rc-icon" style="background:#FEF2F2"><svg viewBox="0 0 24 24" fill="#DC2626"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+            <h4>Critical Cases</h4>
+            <p>Overview of high-priority and ICU patients</p>
+          </div>
+          <div class="report-card" onclick="showToast('Generating ward census…', 'success')">
+            <div class="rc-icon" style="background:#FFFBEB"><svg viewBox="0 0 24 24" fill="#D97706"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+            <h4>Ward Census</h4>
+            <p>Bed occupancy and availability per ward</p>
+          </div>
+          <div class="report-card" onclick="showToast('Generating doctor workload report…', 'success')">
+            <div class="rc-icon" style="background:#EDE9FE"><svg viewBox="0 0 24 24" fill="#7C3AED"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+            <h4>Doctor Workload</h4>
+            <p>Patient load distribution across physicians</p>
+          </div>
+          <div class="report-card" onclick="showToast('Exporting patient data to CSV…', 'success')">
+            <div class="rc-icon" style="background:#F0F9FF"><svg viewBox="0 0 24 24" fill="#0284C7"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+            <h4>Export Data</h4>
+            <p>Download patient records as CSV / Excel</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Monthly Admissions Overview</div>
+          <div id="chart-area" style="padding:10px 0;">
+            <div style="display:flex;align-items:flex-end;gap:8px;height:120px;padding:0 10px">
+              <!-- Simple CSS bar chart -->
+            </div>
+            <div id="bar-chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── USERS PAGE ─── -->
+      <div id="page-users" class="hidden">
+        <div id="users-list"></div>
+      </div>
+
+    </div><!-- end page-content -->
+  </main>
+</div><!-- end screen-app -->
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Add/Edit Modal -->
+<div id="modal-patient" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-patient-title">Add New Patient</h3>
+      <button class="modal-close" onclick="closeModal('modal-patient')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>First Name *</label>
+          <input type="text" id="f-fname" placeholder="First name">
+        </div>
+        <div class="form-field">
+          <label>Last Name *</label>
+          <input type="text" id="f-lname" placeholder="Last name">
+        </div>
+        <div class="form-field">
+          <label>Date of Birth</label>
+          <input type="date" id="f-dob">
+        </div>
+        <div class="form-field">
+          <label>Gender</label>
+          <select id="f-gender">
+            <option value="">Select…</option>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Blood Type</label>
+          <select id="f-blood">
+            <option value="">Unknown</option>
+            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Phone Number</label>
+          <input type="text" id="f-phone" placeholder="+1 (555) 000-0000">
+        </div>
+        <div class="form-field full">
+          <label>Address</label>
+          <input type="text" id="f-address" placeholder="Street address, city">
+        </div>
+        <div class="form-field">
+          <label>Ward / Department</label>
+          <select id="f-ward">
+            <option>General</option><option>Cardiology</option><option>Pediatrics</option>
+            <option>Neurology</option><option>Orthopedics</option><option>Emergency</option><option>ICU</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select id="f-status">
+            <option>Admitted</option><option>Out-patient</option><option>Discharged</option><option>Critical</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Attending Doctor</label>
+          <input type="text" id="f-doctor" placeholder="Dr. Full Name">
+        </div>
+        <div class="form-field">
+          <label>Admission Date</label>
+          <input type="date" id="f-admdate">
+        </div>
+        <div class="form-field full">
+          <label>Primary Diagnosis</label>
+          <input type="text" id="f-diagnosis" placeholder="e.g. Hypertension, Fracture L2…">
+        </div>
+        <div class="form-field full">
+          <label>Allergies</label>
+          <input type="text" id="f-allergies" placeholder="e.g. Penicillin, Aspirin (none if none)">
+        </div>
+        <div class="form-field full">
+          <label>Clinical Notes</label>
+          <textarea id="f-notes" placeholder="Current medications, symptoms, treatment plan…"></textarea>
+        </div>
+        <div class="form-field">
+          <label>Emergency Contact</label>
+          <input type="text" id="f-econtact" placeholder="Name — relationship">
+        </div>
+        <div class="form-field">
+          <label>Emergency Phone</label>
+          <input type="text" id="f-ephone" placeholder="+1 (555) 000-0000">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-patient')">Cancel</button>
+      <button class="btn-save" onclick="savePatient()">Save Patient</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Modal -->
+<div id="modal-view" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="view-modal-title">Patient Record</h3>
+      <button class="modal-close" onclick="closeModal('modal-view')">×</button>
+    </div>
+    <div class="modal-body" id="view-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-view')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="modal-delete" class="modal-overlay hidden">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h3>Confirm Deletion</h3>
+      <button class="modal-close" onclick="closeModal('modal-delete')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--slate-md);font-size:14px;line-height:1.6">
+        Are you sure you want to permanently delete <strong id="del-name"></strong>'s record?
+        This action cannot be undone.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-delete')">Cancel</button>
+      <button class="btn-danger" onclick="confirmDelete()">Delete Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA & STATE
+══════════════════════════════════════════════ */
+
+const USERS = [
+  { username:'admin',   password:'admin123',  name:'Admin User',       role:'Admin',  color:'#0A6E6E' },
+  { username:'drsmith', password:'doctor123', name:'Dr. Sarah Smith',  role:'Doctor', color:'#7C3AED' },
+  { username:'nurse1',  password:'nurse123',  name:'Nurse James Osei', role:'Nurse',  color:'#0284C7' },
+];
+
+let currentUser = null;
+let patients = [
+  { id:'P-1001', fname:'Margaret', lname:'Thompson', dob:'1958-03-14', gender:'Female', blood:'O+', phone:'555-2341', address:'14 Oak Street, Springfield', ward:'Cardiology', status:'Admitted', doctor:'Dr. Sarah Smith', admdate:'2025-06-10', diagnosis:'Atrial Fibrillation, Hypertension', allergies:'Aspirin', notes:'Patient on Warfarin; ECG scheduled for Thursday. Monitor BP every 4h.', econtact:'Robert Thompson — Husband', ephone:'555-2340' },
+  { id:'P-1002', fname:'Daniel',   lname:'Ferreira',  dob:'1990-11-28', gender:'Male',   blood:'A+', phone:'555-7890', address:'88 Pine Ave, Riverside', ward:'Orthopedics', status:'Admitted', doctor:'Dr. James Kone', admdate:'2025-06-14', diagnosis:'Tibial fracture post-MVA', allergies:'None', notes:'Post-op day 3. Physiotherapy session booked.', econtact:'Maria Ferreira — Wife', ephone:'555-7891' },
+  { id:'P-1003', fname:'Aisha',    lname:'Yusuf',     dob:'2015-07-02', gender:'Female', blood:'B+', phone:'555-1122', address:'3 Elm Close, Northgate', ward:'Pediatrics', status:'Out-patient', doctor:'Dr. Li Wei', admdate:'2025-06-18', diagnosis:'Recurrent tonsillitis', allergies:'Penicillin', notes:'Follow-up visit. Consider ENT referral if no improvement.', econtact:'Fatima Yusuf — Mother', ephone:'555-1120' },
+  { id:'P-1004', fname:'George',   lname:'Nkrumah',   dob:'1945-01-19', gender:'Male',   blood:'AB-', phone:'555-4455', address:'22 Cedar Road, Lakeside', ward:'ICU', status:'Critical', doctor:'Dr. Sarah Smith', admdate:'2025-06-20', diagnosis:'STEMI — acute myocardial infarction', allergies:'Iodine contrast', notes:'Post-cath day 1. Continuous telemetry. Cardiology review at 08:00.', econtact:'Linda Nkrumah — Daughter', ephone:'555-4456' },
+  { id:'P-1005', fname:'Priya',    lname:'Sharma',    dob:'1982-09-30', gender:'Female', blood:'A-', phone:'555-6677', address:'61 Maple Drive, Eastwood', ward:'Neurology', status:'Admitted', doctor:'Dr. Carlos Reyes', admdate:'2025-06-19', diagnosis:'Migraine with aura, MRI pending', allergies:'Codeine', notes:'MRI brain with contrast booked Friday AM. Keep lights dim.', econtact:'Raj Sharma — Husband', ephone:'555-6678' },
+  { id:'P-1006', fname:'Thomas',   lname:'Walsh',     dob:'1970-05-05', gender:'Male',   blood:'O-', phone:'555-3344', address:'7 Birch Lane, Hilltop', ward:'General', status:'Discharged', doctor:'Dr. James Kone', admdate:'2025-06-12', diagnosis:'Community-acquired pneumonia', allergies:'None', notes:'Course of amoxicillin completed. Discharged in good condition. Follow-up in 2 weeks.', econtact:'Claire Walsh — Wife', ephone:'555-3345' },
+];
+let nextId = 1007;
+let editingId = null;
+let deletingId = null;
+
+/* ══════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════ */
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const d = document.getElementById('login-dept').value;
+  const errEl = document.getElementById('login-error');
+  errEl.classList.add('hidden');
+
+  const found = USERS.find(x => x.username === u && x.password === p);
+  if (!found) {
+    errEl.textContent = 'Invalid username or password. Please try again.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  currentUser = { ...found, dept: d || 'General' };
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-app').classList.remove('hidden');
+
+  document.getElementById('sb-name').textContent = currentUser.name;
+  document.getElementById('sb-role').textContent = currentUser.role + (d ? ' · ' + d : '');
+  const av = document.getElementById('sb-avatar');
+  av.textContent = currentUser.name[0];
+  av.style.background = currentUser.color;
+
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.classList.toggle('hidden', currentUser.role !== 'Admin');
+  });
+
+  startClock();
+  showPage('dashboard');
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('screen-app').classList.add('hidden');
+  document.getElementById('screen-login').classList.remove('hidden');
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').classList.add('hidden');
+}
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
+const pageMeta = {
+  dashboard:{ title:'Dashboard',    meta:'Overview of hospital activity' },
+  patients: { title:'Patient Registry', meta:'Manage all patient records' },
+  reports:  { title:'Reports',      meta:'Analytics and summaries' },
+  users:    { title:'Staff Users',  meta:'Manage hospital staff accounts' },
+};
+
+function showPage(name) {
+  ['dashboard','patients','reports','users'].forEach(p => {
+    document.getElementById('page-'+p)?.classList.add('hidden');
+  });
+  document.getElementById('page-'+name)?.classList.remove('hidden');
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const items = document.querySelectorAll('.nav-item');
+  items.forEach(el => { if (el.getAttribute('onclick')?.includes("'"+name+"'")) el.classList.add('active'); });
+
+  const m = pageMeta[name] || {};
+  document.getElementById('topbar-title').textContent = m.title || name;
+  document.getElementById('topbar-meta').textContent  = m.meta || '';
+
+  if (name==='dashboard') renderDashboard();
+  if (name==='patients')  renderPatientTable();
+  if (name==='reports')   renderBarChart();
+  if (name==='users')     renderUsers();
+}
+
+/* ══════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════ */
+function renderDashboard() {
+  const total    = patients.length;
+  const admitted = patients.filter(p=>p.status==='Admitted').length;
+  const out      = patients.filter(p=>p.status==='Out-patient').length;
+  const critical = patients.filter(p=>p.status==='Critical').length;
+
+  document.getElementById('stat-total').textContent    = total;
+  document.getElementById('stat-admitted').textContent  = admitted;
+  document.getElementById('stat-outpatient').textContent= out;
+  document.getElementById('stat-critical').textContent  = critical;
+
+  // Recent 5
+  const recent = [...patients].slice(-5).reverse();
+  const rb = document.getElementById('recent-patients-body');
+  rb.innerHTML = recent.length ? recent.map(p=>`
+    <tr>
+      <td><span class="patient-name">${p.fname} ${p.lname}</span></td>
+      <td>${p.ward}</td>
+      <td>${statusBadge(p.status)}</td>
+    </tr>`).join('') : '<tr><td colspan="3" class="empty-state" style="padding:20px;text-align:center;color:var(--slate-lt)">No patients yet</td></tr>';
+
+  // Ward occupancy
+  const wards = ['General','Cardiology','Pediatrics','Neurology','Orthopedics','Emergency','ICU'];
+  const caps  = { General:20, Cardiology:15, Pediatrics:12, Neurology:10, Orthopedics:14, Emergency:8, ICU:6 };
+  const wl = document.getElementById('ward-list');
+  wl.innerHTML = wards.map(w=>{
+    const cnt = patients.filter(p=>p.ward===w && p.status!=='Discharged').length;
+    const cap = caps[w];
+    const pct = Math.round(cnt/cap*100);
+    const cls = pct>=90?'red':pct>=70?'amber':'';
+    return `<div class="ward-item">
+      <div><div class="ward-name">${w}</div><div class="ward-cap">${cnt}/${cap} beds</div></div>
+      <div class="ward-bar-wrap"><div class="ward-bar ${cls}" style="width:${Math.min(pct,100)}%"></div></div>
+      <div style="font-size:12px;font-weight:600;color:var(--slate-md);width:34px;text-align:right">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════
+   PATIENT TABLE
+══════════════════════════════════════════════ */
+function calcAge(dob) {
+  if (!dob) return '—';
+  const d = new Date(dob), n = new Date();
+  let a = n.getFullYear()-d.getFullYear();
+  if (n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate())) a--;
+  return a;
+}
+
+function statusBadge(s) {
+  const map = { Admitted:'badge-teal', 'Out-patient':'badge-slate', Discharged:'badge-green', Critical:'badge-red' };
+  return `<span class="badge ${map[s]||'badge-slate'}">${s}</span>`;
+}
+
+function renderPatientTable() {
+  const q  = document.getElementById('search-input').value.toLowerCase();
+  const fs = document.getElementById('filter-status').value;
+  const fw = document.getElementById('filter-ward').value;
+
+  let list = patients.filter(p => {
+    const match = !q || (`${p.fname} ${p.lname} ${p.id} ${p.doctor}`).toLowerCase().includes(q);
+    const mstat = !fs || p.status===fs;
+    const mward = !fw || p.ward===fw;
+    return match && mstat && mward;
+  });
+
+  const editAllowed = currentUser?.role !== 'Nurse';
+  const delAllowed  = currentUser?.role === 'Admin';
+
+  const tbody = document.getElementById('patient-table-body');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.8.5 13 .5c-1.5 0-2.8.55-3.77 1.44A2.98 2.98 0 006 1c-1.1 0-2 .9-2 2v1H2C.9 4 0 4.9 0 6v14c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+        <h4>No patients found</h4><p>Try adjusting your search or filters.</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(p=>`
+    <tr>
+      <td><span class="patient-id">${p.id}</span></td>
+      <td><span class="patient-name">${p.fname} ${p.lname}</span></td>
+      <td>${calcAge(p.dob)} / ${p.gender?p.gender[0]:'?'}</td>
+      <td>${p.ward}</td>
+      <td><span class="doc-name">${p.doctor||'—'}</span></td>
+      <td>${statusBadge(p.status)}</td>
+      <td>${p.admdate||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="action-btn view" onclick="viewPatient('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          View
+        </button>
+        ${editAllowed?`<button class="action-btn edit" onclick="editPatient('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          Edit
+        </button>`:''}
+        ${delAllowed?`<button class="action-btn del" onclick="deletePatient('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          Del
+        </button>`:''}
+      </td>
+    </tr>`).join('');
+}
+
+/* ══════════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════════ */
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-patient-title').textContent = 'Add New Patient';
+  ['fname','lname','dob','phone','address','doctor','admdate','diagnosis','allergies','notes','econtact','ephone']
+    .forEach(f => document.getElementById('f-'+f).value = '');
+  document.getElementById('f-gender').value = '';
+  document.getElementById('f-blood').value  = '';
+  document.getElementById('f-ward').value   = 'General';
+  document.getElementById('f-status').value = 'Admitted';
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f-admdate').value = today;
+  document.getElementById('modal-patient').classList.remove('hidden');
+}
+
+function editPatient(id) {
+  const p = patients.find(x=>x.id===id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-patient-title').textContent = 'Edit Patient — ' + p.fname + ' ' + p.lname;
+  document.getElementById('f-fname').value     = p.fname;
+  document.getElementById('f-lname').value     = p.lname;
+  document.getElementById('f-dob').value       = p.dob;
+  document.getElementById('f-gender').value    = p.gender;
+  document.getElementById('f-blood').value     = p.blood;
+  document.getElementById('f-phone').value     = p.phone;
+  document.getElementById('f-address').value   = p.address;
+  document.getElementById('f-ward').value      = p.ward;
+  document.getElementById('f-status').value    = p.status;
+  document.getElementById('f-doctor').value    = p.doctor;
+  document.getElementById('f-admdate').value   = p.admdate;
+  document.getElementById('f-diagnosis').value = p.diagnosis;
+  document.getElementById('f-allergies').value = p.allergies;
+  document.getElementById('f-notes').value     = p.notes;
+  document.getElementById('f-econtact').value  = p.econtact;
+  document.getElementById('f-ephone').value    = p.ephone;
+  document.getElementById('modal-patient').classList.remove('hidden');
+}
+
+function savePatient() {
+  const fname = document.getElementById('f-fname').value.trim();
+  const lname = document.getElementById('f-lname').value.trim();
+  if (!fname || !lname) { showToast('First and last name are required.', 'error'); return; }
+
+  const data = {
+    fname, lname,
+    dob:      document.getElementById('f-dob').value,
+    gender:   document.getElementById('f-gender').value,
+    blood:    document.getElementById('f-blood').value,
+    phone:    document.getElementById('f-phone').value.trim(),
+    address:  document.getElementById('f-address').value.trim(),
+    ward:     document.getElementById('f-ward').value,
+    status:   document.getElementById('f-status').value,
+    doctor:   document.getElementById('f-doctor').value.trim(),
+    admdate:  document.getElementById('f-admdate').value,
+    diagnosis:document.getElementById('f-diagnosis').value.trim(),
+    allergies:document.getElementById('f-allergies').value.trim(),
+    notes:    document.getElementById('f-notes').value.trim(),
+    econtact: document.getElementById('f-econtact').value.trim(),
+    ephone:   document.getElementById('f-ephone').value.trim(),
+  };
+
+  if (editingId) {
+    const i = patients.findIndex(x=>x.id===editingId);
+    patients[i] = { ...patients[i], ...data };
+    showToast('Patient record updated successfully.', 'success');
+  } else {
+    data.id = 'P-' + nextId++;
+    patients.push(data);
+    showToast('New patient added successfully.', 'success');
+  }
+
+  closeModal('modal-patient');
+  renderPatientTable();
+}
+
+function viewPatient(id) {
+  const p = patients.find(x=>x.id===id);
+  if (!p) return;
+  document.getElementById('view-modal-title').textContent = p.fname+' '+p.lname+' — '+p.id;
+  document.getElementById('view-modal-body').innerHTML = `
+    <div class="view-section">Patient Information</div>
+    <div class="view-grid">
+      <div class="view-item"><div class="view-label">Full Name</div><div class="view-val">${p.fname} ${p.lname}</div></div>
+      <div class="view-item"><div class="view-label">Date of Birth</div><div class="view-val">${p.dob||'—'} (${calcAge(p.dob)} yrs)</div></div>
+      <div class="view-item"><div class="view-label">Gender</div><div class="view-val">${p.gender||'—'}</div></div>
+      <div class="view-item"><div class="view-label">Blood Type</div><div class="view-val">${p.blood||'—'}</div></div>
+      <div class="view-item"><div class="view-label">Phone</div><div class="view-val">${p.phone||'—'}</div></div>
+      <div class="view-item"><div class="view-label">Address</div><div class="view-val">${p.address||'—'}</div></div>
+    </div>
+    <div class="view-section">Clinical Details</div>
+    <div class="view-grid">
+      <div class="view-item"><div class="view-label">Ward</div><div class="view-val">${p.ward}</div></div>
+      <div class="view-item"><div class="view-label">Status</div><div class="view-val">${statusBadge(p.status)}</div></div>
+      <div class="view-item"><div class="view-label">Attending Doctor</div><div class="view-val">${p.doctor||'—'}</div></div>
+      <div class="view-item"><div class="view-label">Admission Date</div><div class="view-val">${p.admdate||'—'}</div></div>
+      <div class="view-item" style="grid-column:span 2"><div class="view-label">Diagnosis</div><div class="view-val">${p.diagnosis||'—'}</div></div>
+      <div class="view-item" style="grid-column:span 2"><div class="view-label">Allergies</div><div class="view-val">${p.allergies||'None known'}</div></div>
+    </div>
+    ${p.notes?`<div class="view-section">Clinical Notes</div><div class="view-notes">${p.notes}</div>`:''}
+    <div class="view-section">Emergency Contact</div>
+    <div class="view-grid">
+      <div class="view-item"><div class="view-label">Contact Person</div><div class="view-val">${p.econtact||'—'}</div></div>
+      <div class="view-item"><div class="view-label">Phone</div><div class="view-val">${p.ephone||'—'}</div></div>
+    </div>`;
+  document.getElementById('modal-view').classList.remove('hidden');
+}
+
+function deletePatient(id) {
+  deletingId = id;
+  const p = patients.find(x=>x.id===id);
+  document.getElementById('del-name').textContent = p ? p.fname+' '+p.lname : id;
+  document.getElementById('modal-delete').classList.remove('hidden');
+}
+
+function confirmDelete() {
+  patients = patients.filter(x=>x.id!==deletingId);
+  closeModal('modal-delete');
+  renderPatientTable();
+  showToast('Patient record deleted.', 'error');
+}
+
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target===m) closeModal(m.id); });
+});
+
+/* ══════════════════════════════════════════════
+   REPORTS CHART
+══════════════════════════════════════════════ */
+function renderBarChart() {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun'];
+  const vals   = [18,24,21,30,27,patients.length];
+  const max    = Math.max(...vals);
+  const area   = document.getElementById('bar-chart');
+  area.innerHTML = `
+    <div style="display:flex;align-items:flex-end;gap:14px;height:140px;padding:0 16px 0;border-bottom:2px solid var(--border);">
+      ${vals.map((v,i)=>`
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+          <span style="font-size:11px;font-weight:700;color:var(--slate)">${v}</span>
+          <div style="width:100%;height:${Math.round(v/max*100)}%;background:linear-gradient(to top,var(--teal-dk),var(--teal));border-radius:4px 4px 0 0;min-height:4px"></div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:14px;padding:6px 16px 0">
+      ${months.map(m=>`<div style="flex:1;text-align:center;font-size:11px;color:var(--slate-lt);font-weight:600">${m}</div>`).join('')}
+    </div>
+    <div style="padding:10px 16px 0;font-size:11px;color:var(--slate-lt)">Monthly patient admissions — 2025</div>`;
+}
+
+/* ══════════════════════════════════════════════
+   USERS PAGE
+══════════════════════════════════════════════ */
+function renderUsers() {
+  const el = document.getElementById('users-list');
+  const roleColors = { Admin:'#0A6E6E', Doctor:'#7C3AED', Nurse:'#0284C7' };
+  const roleBadge  = { Admin:'badge-teal', Doctor:'badge-slate', Nurse:'badge-slate' };
+  el.innerHTML = USERS.map(u=>`
+    <div class="user-card">
+      <div class="user-card-avatar" style="background:${roleColors[u.role]||'#64748B'}">${u.name[0]}</div>
+      <div class="user-card-info">
+        <div class="user-card-name">${u.name}</div>
+        <div class="user-card-email">@${u.username}</div>
+      </div>
+      <span class="badge ${roleBadge[u.role]||'badge-slate'}">${u.role}</span>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════
+   TOAST & CLOCK
+══════════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className=''; }, 3000);
+}
+
+function startClock() {
+  const el = document.getElementById('topbar-time');
+  function tick() {
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}) + '  ' +
+                     now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  }
+  tick(); setInterval(tick, 10000);
+}
+</script>
+</body>
+</html>
