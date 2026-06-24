@@ -54,9 +54,6 @@ The solution adopts a hierarchical network architecture incorporating Core, Dist
 - Physical Network Topology
 - IP Addressing Scheme
 - VLAN Design Plan
-- Routing Architecture
-- Security Architecture
-- WAN Design
 - Device Configuration Templates
 - Testing and Validation Documentation
 
